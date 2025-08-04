@@ -1,4 +1,5 @@
-﻿using L.Bank.Accounts.Common;
+﻿using System.ComponentModel.DataAnnotations;
+using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Common.Filters;
 using L.Bank.Accounts.Features.Accounts.CheckAccountExists;
 using L.Bank.Accounts.Features.Accounts.CloseAccount;
@@ -51,12 +52,17 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// Удалить счет
     /// </summary>
     /// <param name="accountId">ID удаляемого счета</param>
+    /// <param name="ownerId">ID владельца счета</param>
     [HttpDelete("{accountId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<MbResult> DeleteAccount(Guid accountId, [FromQuery] Guid ownerId)
+    public async Task<MbResult> DeleteAccount(Guid accountId, [FromQuery, Required] Guid ownerId)
     {
-        var command = new CloseAccountCommand(accountId, ownerId);
+        var command = new CloseAccountCommand
+        {
+            AccountId = accountId,
+            OwnerId = ownerId
+        };
         
         return await mediator.Send(command);
     }
@@ -76,6 +82,7 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// Зарегистрировать транзакцию по счету
     /// </summary>
     /// <param name="accountId">ID счета для регистрации транзакции</param>
+    /// <param name="dto">DTO объект, описывающий регистрируемую транзакцию</param>
     [HttpPost("{accountId:guid}/transactions")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -90,6 +97,7 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// <summary>
     /// Выполнить перевод между счетами
     /// </summary>
+    /// <param name="command">Объект команды, описывающий перевод между счетами</param>
     [HttpPost("transfer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -114,6 +122,7 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// <summary>
     /// Сформировать выписку по нескольким счетам
     /// </summary>
+    /// <param name="query">Объект запроса, описывающий операция формирования выписки по нескольким счетам</param>
     [HttpGet("statement")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<MbResult<List<AccountStatementVm>>> GetManyAccountStatements(
@@ -126,6 +135,7 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// Сформировать выписку по счету
     /// </summary>
     /// <param name="accountId">ID счета</param>
+    /// <param name="dto">DTO объект, описывающий операцию формирования выписки по счету</param>
     [HttpGet("{accountId:guid}/statement")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -141,10 +151,11 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// Получить баланс по счету
     /// </summary>
     /// <param name="accountId">ID счета для получения баланса</param>
+    /// <param name="ownerId">ID владельца счета</param>
     [HttpGet("{accountId:guid}/balance")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<MbResult<decimal>> GetBalance(Guid accountId, [FromQuery] Guid ownerId)
+    public async Task<MbResult<decimal>> GetBalance(Guid accountId, [FromQuery, Required] Guid ownerId)
     {
         var query = new GetAccountBalanceQuery(accountId, ownerId);
 

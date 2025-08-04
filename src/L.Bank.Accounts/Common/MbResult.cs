@@ -39,7 +39,6 @@ public class MbResult
     }
 
     public static MbResult<TResult> Fail<TResult>(string message) => new(default, new MbError([message]));
-    public static MbResult<TResult> Fail<TResult>(IEnumerable<string> messages) => new(default, new MbError(messages));
     public static MbResult<TResult> Fail<TResult>(MbError error) => new(default, error);
     public static MbResult Success() => new();
     public static MbResult<TResult> Success<TResult>(TResult value) => new(value);

@@ -3,11 +3,23 @@ using Mapster;
 
 namespace L.Bank.Accounts.Features.Accounts.UpdateAccount;
 
-public sealed record UpdateAccountDto(Guid OwnerId, decimal? InterestRate, DateOnly? MaturityDate)
+public sealed record UpdateAccountDto
 {
-    public Guid OwnerId { get; } = OwnerId;
-    public decimal? InterestRate { get; } = InterestRate;
-    public DateOnly? MaturityDate { get; } = MaturityDate;
+    /// <summary>
+    /// ID владельца счета
+    /// </summary>
+    public required Guid OwnerId { get; init; }
+
+    /// <summary>
+    /// Процентная ставка
+    /// </summary>
+    /// <example>10</example>
+    public decimal? InterestRate { get; init; }
+
+    /// <summary>
+    /// Дата погашения счета (для срочных вкладов)
+    /// </summary>
+    public DateOnly? MaturityDate { get; init; }
 }
 
 public static class MappingExtensions

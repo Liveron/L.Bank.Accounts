@@ -3,18 +3,18 @@
 namespace L.Bank.Accounts.Features.Accounts.GetAccountStatement;
 
 /// <summary>
-/// DTO для запроса выписки по счету за указанный период.
+/// DTO для запроса выписки по счету за указанный период
 /// </summary>
-public sealed record GetAccountStatementDto(DateOnly StartDate, DateOnly EndDate)
+public sealed record GetAccountStatementDto
 {
     /// <summary>
-    /// Начальная дата периода, за который запрашивается выписка.
+    /// Начальная дата периода, за который запрашивается выписка
     /// </summary>
-    public DateOnly StartDate { get; init; }
+    public required DateOnly StartDate { get; init; }
     /// <summary>
-    /// Конечная дата периода, за который запрашивается выписка.
+    /// Конечная дата периода, за который запрашивается выписка
     /// </summary>
-    public DateOnly EndDate { get; init; }
+    public required DateOnly EndDate { get; init; }
 }
 
 public static class MappingExtensions

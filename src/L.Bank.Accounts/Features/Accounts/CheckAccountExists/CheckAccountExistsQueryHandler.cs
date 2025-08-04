@@ -9,7 +9,7 @@ public sealed class CheckAccountExistsQueryHandler(IMediator mediator)
 {
     public async Task<MbResult<bool>> Handle(CheckAccountExistsQuery query, CancellationToken token)
     {
-        var getAllAccountsQuery = new GetAllAccountsQuery(query.OwnerId);
+        var getAllAccountsQuery = new GetAllAccountsQuery { OwnerId = query.OwnerId };
         var result = await mediator.Send(getAllAccountsQuery, token);
 
         if (result.IsFailure)

@@ -13,7 +13,7 @@ public sealed class TransferCommandHandler(IAccountsRepository accountsRepositor
         if (accountToDebit is null)
             return ResultFactory.FailAccountNotFound(command.FromAccountId);
 
-        var accountToCredit = await accountsRepository.GetAccountAsync(command.ToAccountId, command.ToAccountOwnerID);
+        var accountToCredit = await accountsRepository.GetAccountAsync(command.ToAccountId, command.ToAccountOwnerId);
         if (accountToCredit is null)
             return ResultFactory.FailAccountNotFound(command.ToAccountId);
 

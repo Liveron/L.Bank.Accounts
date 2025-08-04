@@ -14,17 +14,24 @@ public sealed class CreateAccountStatementRequestHandler
             .Where(t => DateOnly.FromDateTime(t.DateTime) >= request.StartDate &&
                         DateOnly.FromDateTime(t.DateTime) <= request.EndDate);
 
+        var transactionVms = new List<AccountStatementTransactionVm>();
+
         var balance = account.GetBalanceBefore(request.StartDate);
-        var transactionVms = transactions.Select(t => new AccountStatementTransactionVm
+        foreach (var transaction in transactions)
         {
-            Id = t.Id,
-            Type = t.Type,
-            Sum = t.Sum,
-            CounterpartyAccountId = t.CounterpartyAccountId,
-            Description = t.Description,
-            DateTime = t.DateTime,
-            CurrentBalance = balance += t.IsDebit ? -t.Sum : t.Sum
-        });
+            var transactionVm = new AccountStatementTransactionVm
+            {
+                Id = transaction.Id,
+                Type = transaction.Type,
+                Sum = transaction.Sum,
+                CounterpartyAccountId = transaction.CounterpartyAccountId,
+                Description = transaction.Description,
+                DateTime = transaction.DateTime,
+                CurrentBalance = balance,
+            };
+            transactionVms.Add(transactionVm);
+            balance += transaction.IsDebit ? -transaction.Sum : transaction.Sum;
+        }
 
         var statementVm = new AccountStatementVm
         {
