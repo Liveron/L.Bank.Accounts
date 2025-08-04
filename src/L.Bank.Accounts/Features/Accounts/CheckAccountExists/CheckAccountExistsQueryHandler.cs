@@ -22,7 +22,7 @@ public sealed class CheckAccountExistsQueryHandler(IMediator mediator)
         if (query.AccountType is null)
             return MbResult.Success(true);
 
-        var hasAccount = accounts.Any(a => a.Type == query.AccountType);
+        var hasAccount = accounts.Any(a => a.AccountType == query.AccountType);
         return MbResult.Success(hasAccount);
     }
 }

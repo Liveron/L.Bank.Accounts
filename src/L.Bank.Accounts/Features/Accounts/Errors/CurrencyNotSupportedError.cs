@@ -10,7 +10,7 @@ public record CurrencyNotSupportedError : MbError
 
 public static partial class MbResultFactoryExtensions
 {
-    public static MbResult<TResult> FailCurrencyNotSupportedError<TResult>(
+    public static MbResult<TResult> FailCurrencyNotSupported<TResult>(
         this IMbResultFactory factory, string currencyCode)
     {
         var error = new CurrencyNotSupportedError(currencyCode);

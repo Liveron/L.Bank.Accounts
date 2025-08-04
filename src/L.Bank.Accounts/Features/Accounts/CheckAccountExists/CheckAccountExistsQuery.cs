@@ -5,6 +5,12 @@ namespace L.Bank.Accounts.Features.Accounts.CheckAccountExists;
 
 public sealed record CheckAccountExistsQuery : IRequest<MbResult<bool>>
 {
+    /// <summary>
+    /// ID пользователя, которого проверяется наличие счета
+    /// </summary>
     public required Guid OwnerId { get; init; }
-    public required AccountType? AccountType { get; init; }
+    /// <summary>
+    /// Тип счета, наличие которого нужно проверить
+    /// </summary>
+    public required AccountType AccountType { get; init; }
 }

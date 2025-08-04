@@ -12,6 +12,7 @@ using L.Bank.Accounts.Features.Accounts.Transfer;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using L.Bank.Accounts.Features.Accounts.CreateTransaction;
+using L.Bank.Accounts.Features.Accounts.GetAccountProperty;
 using L.Bank.Accounts.Features.Accounts.UpdateAccount;
 
 namespace L.Bank.Accounts.Features.Accounts;
@@ -24,6 +25,7 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// <summary>
     /// Создать счет
     /// </summary>
+    /// <param name="command">Команда, описывающая создание счета</param>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -37,8 +39,7 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// Изменить счет
     /// </summary>
     /// <param name="accountId">ID изменяемого счета</param>
-    /// <param name="dto"></param>
-    /// <returns></returns>
+    /// <param name="dto">DTO объект, описывающая обновление счета</param>
     [HttpPatch("{accountId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<MbResult> UpdateAccount(Guid accountId, [FromBody] UpdateAccountDto dto)
@@ -70,10 +71,11 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// <summary>
     /// Получить список счетов
     /// </summary>
+    /// <param name="query">Объект запроса, описывающий операцию получения списка счетов</param>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<MbResult<List<Account>>> GetAllAccounts([FromQuery] GetAllAccountsQuery query)
+    public async Task<MbResult<List<AccountVm>>> GetAllAccounts([FromQuery] GetAllAccountsQuery query)
     {
         return await mediator.Send(query);
     }
@@ -109,8 +111,9 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
 
 
     /// <summary>
-    /// Проверить наличие счета у клиента
+    /// Проверить наличие какого-либо счета у клиента
     /// </summary>
+    /// <param name="query">Объект запроса, описывающий операцию проверки наличия счета</param>
     [HttpGet("check")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -158,6 +161,28 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     public async Task<MbResult<decimal>> GetBalance(Guid accountId, [FromQuery, Required] Guid ownerId)
     {
         var query = new GetAccountBalanceQuery(accountId, ownerId);
+
+        return await mediator.Send(query);
+    }
+
+    /// <summary>
+    /// Получить свойство счета
+    /// </summary>
+    /// <param name="propertyName">Имя свойства</param>
+    /// <param name="accountId">ID счета</param>
+    /// <param name="ownerId">ID владельца счета</param>
+    [HttpGet("{accountId:guid}/{propertyName}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<MbResult<object?>> GetAccountProperty(string propertyName, Guid accountId, [FromQuery, Required] Guid ownerId)
+    {
+        var query = new GetAccountPropertyQuery
+        {
+            AccountId = accountId,
+            OwnerId = ownerId,
+            PropertyName = propertyName
+        };
 
         return await mediator.Send(query);
     }

@@ -16,11 +16,11 @@ public sealed class OpenAccountCommandHandler(
             return ResultFactory.FailUserNotFound<Guid>(request.OwnerId);
 
         if (!currencyService.CheckCurrency(request.Currency))
-            return ResultFactory.FailCurrencyNotSupportedError<Guid>(request.Currency);
+            return ResultFactory.FailCurrencyNotSupported<Guid>(request.Currency);
 
         var accountTerms = AccountTerms.FromName(request.AccountTerms);
         var accountCreationResult = Account.New(
-            Guid.NewGuid(), request.OwnerId, accountTerms, request.Currency, request.MaturityDate);
+            Guid.NewGuid(), request.OwnerId, accountTerms, request.Currency, request.MaturityDate, request.Sum);
 
         if (accountCreationResult.IsFailure)
             return MbResult.Fail<Guid>(accountCreationResult.Error!);

@@ -21,6 +21,10 @@ public sealed record OpenAccountCommand : IRequest<MbResult<Guid>>
     /// <example>RUB</example>
     public required string Currency { get; init; }
     /// <summary>
+    /// Начальная сумма счета
+    /// </summary>
+    public decimal Sum { get; init; } = 0;
+    /// <summary>
     /// Дата погашения счета (для срочных вкладов)
     /// </summary>
     public DateOnly? MaturityDate { get; init; }

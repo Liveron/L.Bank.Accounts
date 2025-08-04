@@ -10,7 +10,7 @@ public class GetAccountStatementQueryValidator : AbstractValidator<GetAccountSta
             .NotEmpty()
             .WithMessage("Account ID is required.");
 
-        RuleFor(q => q.OwnerID)
+        RuleFor(q => q.OwnerId)
             .NotEmpty()
             .WithMessage("Account owner ID is required.");
 

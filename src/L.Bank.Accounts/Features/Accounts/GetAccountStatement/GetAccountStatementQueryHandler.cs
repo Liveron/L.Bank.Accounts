@@ -14,10 +14,10 @@ public sealed class GetAccountStatementQueryHandler(
     public override async Task<MbResult<AccountStatementVm>> Handle(
         GetAccountStatementQuery query, CancellationToken token)
     {
-        if (!await identityService.IdentifyUserAsync(query.OwnerID))
-            return ResultFactory.FailUserNotFound<AccountStatementVm>(query.OwnerID);
+        if (!await identityService.IdentifyUserAsync(query.OwnerId))
+            return ResultFactory.FailUserNotFound<AccountStatementVm>(query.OwnerId);
 
-        var account = await accountsRepository.GetAccountAsync(query.AccountId, query.OwnerID);
+        var account = await accountsRepository.GetAccountAsync(query.AccountId, query.OwnerId);
         if (account is null)
             return ResultFactory.FailAccountNotFound<AccountStatementVm>(query.AccountId);
 

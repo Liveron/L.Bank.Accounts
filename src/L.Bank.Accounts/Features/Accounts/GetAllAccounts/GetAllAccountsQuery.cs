@@ -4,7 +4,7 @@ using MediatR;
 
 namespace L.Bank.Accounts.Features.Accounts.GetAllAccounts;
 
-public sealed record GetAllAccountsQuery : IRequest<MbResult<List<Account>>>
+public sealed record GetAllAccountsQuery : IRequest<MbResult<List<AccountVm>>>
 {
     /// <summary>
     /// ID владельца счетов
