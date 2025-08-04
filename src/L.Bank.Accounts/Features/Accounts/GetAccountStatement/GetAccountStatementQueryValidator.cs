@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using JetBrains.Annotations;
 
 namespace L.Bank.Accounts.Features.Accounts.GetAccountStatement;
 
+[UsedImplicitly]
 public class GetAccountStatementQueryValidator : AbstractValidator<GetAccountStatementQuery>
 {
     public GetAccountStatementQueryValidator()

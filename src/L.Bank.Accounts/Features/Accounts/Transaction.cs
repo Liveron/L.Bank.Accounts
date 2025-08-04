@@ -9,6 +9,7 @@ public sealed class Transaction(
     string? description = null)
 {
     public Guid Id { get; private set; } = id;
+    // ReSharper disable once UnusedMember.Global Необходимо по заданию
     public Guid AccountId { get; private set; } = accountId;
     public Guid? CounterpartyAccountId { get; private set; } = counterPartyAccountId;
     public decimal Sum { get; private set; } = sum;

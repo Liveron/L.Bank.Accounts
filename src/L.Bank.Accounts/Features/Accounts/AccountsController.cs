@@ -175,7 +175,8 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<MbResult<object?>> GetAccountProperty(string propertyName, Guid accountId, [FromQuery, Required] Guid ownerId)
+    public async Task<MbResult<object?>> GetAccountProperty(
+        string propertyName, Guid accountId, [FromQuery, Required] Guid ownerId)
     {
         var query = new GetAccountPropertyQuery
         {

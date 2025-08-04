@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using JetBrains.Annotations;
 
 namespace L.Bank.Accounts.Features.Accounts.CloseAccount;
 
+[UsedImplicitly]
 public class CloseAccountCommandValidator : AbstractValidator<CloseAccountCommand>
 {
     public CloseAccountCommandValidator()

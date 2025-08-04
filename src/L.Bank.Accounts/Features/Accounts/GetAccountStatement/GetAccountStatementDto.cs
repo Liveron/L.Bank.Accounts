@@ -1,4 +1,5 @@
-﻿using Mapster;
+﻿using JetBrains.Annotations;
+using Mapster;
 
 namespace L.Bank.Accounts.Features.Accounts.GetAccountStatement;
 
@@ -10,10 +11,12 @@ public sealed record GetAccountStatementDto
     /// <summary>
     /// Начальная дата периода, за который запрашивается выписка
     /// </summary>
+    [UsedImplicitly]
     public required DateOnly StartDate { get; init; }
     /// <summary>
     /// Конечная дата периода, за который запрашивается выписка
     /// </summary>
+    [UsedImplicitly]
     public required DateOnly EndDate { get; init; }
 }
 

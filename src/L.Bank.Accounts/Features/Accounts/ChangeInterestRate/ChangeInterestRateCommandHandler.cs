@@ -1,7 +1,6 @@
 ﻿using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Features.Accounts.Errors;
 using L.Bank.Accounts.Identity;
-using MediatR;
 
 namespace L.Bank.Accounts.Features.Accounts.ChangeInterestRate;
 

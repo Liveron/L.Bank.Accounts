@@ -9,5 +9,6 @@ public enum AccountType
     [JsonStringEnumMemberName("Депозит")]
     Deposit,
     [JsonStringEnumMemberName("Кредит")]
+    // ReSharper disable once UnusedMember.Global Нужно по заданию
     Credit
 }

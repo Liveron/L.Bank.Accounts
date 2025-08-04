@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using JetBrains.Annotations;
 
 namespace L.Bank.Accounts.Features.Accounts.ChangeMaturityDate;
 
+[UsedImplicitly]
 public sealed class ChangeMaturityDateCommandValidator : AbstractValidator<ChangeMaturityDateCommand>
 {
     public ChangeMaturityDateCommandValidator()

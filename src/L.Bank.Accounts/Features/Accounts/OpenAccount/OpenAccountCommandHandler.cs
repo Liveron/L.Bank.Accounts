@@ -2,7 +2,6 @@
 using L.Bank.Accounts.Features.Accounts.Errors;
 using L.Bank.Accounts.Identity;
 using L.Bank.Accounts.Identity.Errors;
-using MediatR;
 
 namespace L.Bank.Accounts.Features.Accounts.OpenAccount;
 

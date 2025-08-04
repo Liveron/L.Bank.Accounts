@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-using L.Bank.Accounts.Common;
+﻿using L.Bank.Accounts.Common;
 
 namespace L.Bank.Accounts.Features.Accounts;
 

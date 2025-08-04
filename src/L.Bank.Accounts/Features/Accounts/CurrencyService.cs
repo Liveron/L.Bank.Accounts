@@ -1,6 +1,4 @@
-﻿using L.Bank.Accounts.Common;
-
-namespace L.Bank.Accounts.Features.Accounts;
+﻿namespace L.Bank.Accounts.Features.Accounts;
 
 public interface ICurrencyService
 {

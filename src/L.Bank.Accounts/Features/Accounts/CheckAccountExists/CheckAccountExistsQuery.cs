@@ -12,5 +12,5 @@ public sealed record CheckAccountExistsQuery : IRequest<MbResult<bool>>
     /// <summary>
     /// Тип счета, наличие которого нужно проверить
     /// </summary>
-    public required AccountType AccountType { get; init; }
+    public AccountType? AccountType { get; init; }
 }

@@ -9,7 +9,7 @@ public record UserNotFoundError : NotFoundError
         : base($"Не удалось найти пользователя с ID {userId}.") { }
 }
 
-public static partial class MbResultFactoryExtensions
+public static class MbResultFactoryExtensions
 {
     public static MbResult<TResult> FailUserNotFound<TResult>(this IMbResultFactory factory, Guid userId)
     {

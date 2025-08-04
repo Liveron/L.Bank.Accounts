@@ -5,7 +5,6 @@ using L.Bank.Accounts.Identity;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using L.Bank.Accounts.Common.Swagger;
-using Microsoft.AspNetCore.Http.Json;
 
 namespace L.Bank.Accounts.Extensions;
 

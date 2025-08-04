@@ -1,6 +1,4 @@
-﻿using L.Bank.Accounts.Common;
-
-namespace L.Bank.Accounts.Identity;
+﻿namespace L.Bank.Accounts.Identity;
 
 public interface IIdentityService
 {

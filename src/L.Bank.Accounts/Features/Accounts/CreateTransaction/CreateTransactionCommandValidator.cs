@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using JetBrains.Annotations;
 
 namespace L.Bank.Accounts.Features.Accounts.CreateTransaction;
 
+[UsedImplicitly]
 public sealed class CreateTransactionCommandValidator : AbstractValidator<CreateTransactionCommand>
 {
     public CreateTransactionCommandValidator()

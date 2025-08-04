@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using JetBrains.Annotations;
 
 namespace L.Bank.Accounts.Features.Accounts.OpenAccount;
 
+[UsedImplicitly]
 public class OpenAccountCommandValidator : AbstractValidator<OpenAccountCommand>
 {
     public OpenAccountCommandValidator()

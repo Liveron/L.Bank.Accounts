@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using JetBrains.Annotations;
 
 namespace L.Bank.Accounts.Features.Accounts.CheckAccountExists;
 
+[UsedImplicitly]
 public class CheckAccountExistsQueryValidator : AbstractValidator<CheckAccountExistsQuery>
 {
     public CheckAccountExistsQueryValidator()
