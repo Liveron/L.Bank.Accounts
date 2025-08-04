@@ -5,8 +5,17 @@ namespace L.Bank.Accounts.Common;
 
 public class MbResult
 {
+    /// <summary>
+    /// Свойство, определяющее, успешно ли завершилась операция
+    /// </summary>
     public bool IsSuccess => Error is null;
-    public MbError? Error { get; private set; }
+    /// <summary>
+    /// Ошибка, возращаемая при неуспешном завершении операции
+    /// </summary>
+    public MbError? Error { get; }
+    /// <summary>
+    /// Свойство, определяющее, завершилась ли операция с ошибкой
+    /// </summary>
     public bool IsFailure => Error is not null;
 
     protected MbResult(MbError? error = null)
@@ -38,10 +47,17 @@ public class MbResult
 
 public sealed class MbResult<TResult> : MbResult, IRequest
 {
+    /// <summary>
+    /// Значение, возвращаемое при успешном завершении операции
+    /// </summary>
     public TResult? Value { get; private set; }
 
     internal MbResult(TResult? value, MbError? error = null) 
         : base(error) => Value = value; 
 }
 
+/// <summary>
+/// Объект ошибки
+/// </summary>
+/// <param name="Messages">Коллекция сообщений, описывающих возникшие ошибки</param>
 public record MbError(IEnumerable<string> Messages);

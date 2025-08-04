@@ -54,9 +54,9 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     [HttpDelete("{accountId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<MbResult> DeleteAccount(Guid accountId)
+    public async Task<MbResult> DeleteAccount(Guid accountId, [FromQuery] Guid ownerId)
     {
-        var command = new CloseAccountCommand(accountId);
+        var command = new CloseAccountCommand(accountId, ownerId);
         
         return await mediator.Send(command);
     }
@@ -144,9 +144,9 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     [HttpGet("{accountId:guid}/balance")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<MbResult<decimal>> GetBalance(Guid accountId)
+    public async Task<MbResult<decimal>> GetBalance(Guid accountId, [FromQuery] Guid ownerId)
     {
-        var query = new GetAccountBalanceQuery(accountId);
+        var query = new GetAccountBalanceQuery(accountId, ownerId);
 
         return await mediator.Send(query);
     }

@@ -9,15 +9,15 @@ public sealed class ChangeInterestRateCommandHandler(
     IAccountsRepository accountsRepository, IIdentityService identityService) 
     : RequestHandler<ChangeInterestRateCommand, MbResult>
 {
-    public override async Task<MbResult> Handle(ChangeInterestRateCommand command, CancellationToken cancellationToken)
+    public override async Task<MbResult> Handle(ChangeInterestRateCommand query, CancellationToken cancellationToken)
     {
-        if (!await identityService.IdentifyUserAsync(command.OwnerId))
-            ResultFactory.FailAccountNotFound(command.AccountId);
+        if (!await identityService.IdentifyUserAsync(query.OwnerId))
+            ResultFactory.FailAccountNotFound(query.AccountId);
 
-        var account = await accountsRepository.GetAccountAsync(command.AccountId, command.OwnerId);
+        var account = await accountsRepository.GetAccountAsync(query.AccountId, query.OwnerId);
 
         return account is not null 
-            ? account.ChangeInterestRate(command.InterestRate) 
-            : ResultFactory.FailAccountNotFound(command.AccountId);
+            ? account.ChangeInterestRate(query.InterestRate) 
+            : ResultFactory.FailAccountNotFound(query.AccountId);
     }
 }
