@@ -1,20 +1,28 @@
-﻿using L.Bank.Accounts.Features.Accounts.Exceptions;
+﻿using L.Bank.Accounts.Common;
+using L.Bank.Accounts.Features.Accounts.Errors;
+using L.Bank.Accounts.Identity;
+using L.Bank.Accounts.Identity.Errors;
 using MediatR;
 
 namespace L.Bank.Accounts.Features.Accounts.CreateTransaction;
 
-public sealed class CreateTransactionCommandHandler(IAccountsRepository accountsRepository) 
-    : IRequestHandler<CreateTransactionCommand>
+public sealed class CreateTransactionCommandHandler(
+    IAccountsRepository accountsRepository, IIdentityService identityService) 
+    : RequestHandler<CreateTransactionCommand, MbResult>
 {
-    public Task Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
+    public override async Task<MbResult> Handle(CreateTransactionCommand command, CancellationToken _)
     {
-        var account = accountsRepository.GetAccount(request.AccountId);
+        if (!await identityService.IdentifyUserAsync(command.OwnerId))
+            return ResultFactory.FailUserNotFound(command.OwnerId);
+
+        var account = await accountsRepository.GetAccountAsync(command.AccountId, command.OwnerId);
 
         if (account is null)
-            throw new AccountNotFoundException(request.AccountId);
+            return ResultFactory.FailAccountNotFound(command.AccountId);
 
-        account.RegisterTransaction(request.Sum, request.TransactionType, request.CounterpartyAccountId, request.Description);
+        var result = account.RegisterTransaction(
+            command.Sum, command.TransactionType, command.CounterpartyAccountId, command.Description);
 
-        return Task.CompletedTask;
+        return result.IsFailure ? MbResult.Fail(result.Error!) : MbResult.Success();
     }
 }

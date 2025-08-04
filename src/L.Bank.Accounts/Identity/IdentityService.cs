@@ -1,14 +1,16 @@
-﻿namespace L.Bank.Accounts.Identity;
+﻿using L.Bank.Accounts.Common;
+
+namespace L.Bank.Accounts.Identity;
 
 public interface IIdentityService
 {
-    public bool IdentifyUser(Guid userId);
+    public Task<bool> IdentifyUserAsync(Guid userId);
 }
 
 public class IdentityService : IIdentityService
 {
-    public bool IdentifyUser(Guid userId)
+    public Task<bool> IdentifyUserAsync(Guid userId)
     {
-        return true;
+        return Task.FromResult(true);
     }
 }

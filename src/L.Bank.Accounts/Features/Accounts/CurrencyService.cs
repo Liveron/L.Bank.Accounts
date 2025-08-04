@@ -1,4 +1,6 @@
-﻿namespace L.Bank.Accounts.Features.Accounts;
+﻿using L.Bank.Accounts.Common;
+
+namespace L.Bank.Accounts.Features.Accounts;
 
 public interface ICurrencyService
 {
@@ -9,5 +11,8 @@ public sealed class CurrencyService : ICurrencyService
 {
     private static readonly string[] ValidCurrencyCodes = [ "RUB" ];
 
-    public bool CheckCurrency(string currencyCode) => ValidCurrencyCodes.Contains(currencyCode);
+    public bool CheckCurrency(string currencyCode)
+    {
+        return ValidCurrencyCodes.Contains(currencyCode);
+    }
 }

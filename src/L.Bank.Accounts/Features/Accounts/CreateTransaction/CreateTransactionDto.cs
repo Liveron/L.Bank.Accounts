@@ -1,7 +1,6 @@
-﻿using L.Bank.Accounts.Features.Accounts.CreateTransaction;
-using Mapster;
+﻿using Mapster;
 
-namespace L.Bank.Accounts.Features.Accounts;
+namespace L.Bank.Accounts.Features.Accounts.CreateTransaction;
 
 public sealed record CreateTransactionDto(
     Guid? CounterpartyAccountId,
@@ -17,7 +16,7 @@ public static class MappingExtensions
             .Map(command => command.AccountId, _ => (Guid)MapContext.Current!.Parameters["AccountId"]);
     }
 
-    public static CreateTransactionCommand AdaptToCreateTransactionCommand(this CreateTransactionDto dto, Guid accountId)
+    public static CreateTransactionCommand MapToCreateTransactionCommand(this CreateTransactionDto dto, Guid accountId)
     {
         return dto.BuildAdapter()
             .AddParameters("AccountId", accountId)

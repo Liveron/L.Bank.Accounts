@@ -10,6 +10,10 @@ public sealed class CreateTransactionCommandValidator : AbstractValidator<Create
             .NotEmpty()
             .WithMessage("Account ID is required.");
 
+        RuleFor(c => c.OwnerId)
+            .NotEmpty()
+            .WithMessage("Account owner ID is required.");
+
         RuleFor(x => x.TransactionType)
             .IsInEnum()
             .WithMessage("Unknown transaction type");
