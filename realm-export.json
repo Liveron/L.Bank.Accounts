@@ -1,0 +1,30 @@
+{
+  "realm": "dev-realm",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "swagger-ui",
+      "enabled": true,
+      "publicClient": true,
+      "implicitFlowEnabled": true,
+      "redirectUris": [ "*" ],
+      "webOrigins": [ "*" ]
+    }
+  ],
+  "users": [
+    {
+      "username": "dev",
+      "enabled": true,
+      "firstName": "Test",
+      "lastName": "User",
+      "email": "test@example.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}

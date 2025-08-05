@@ -2,6 +2,9 @@
 
 namespace L.Bank.Accounts.Features.Accounts;
 
+/// <summary>
+/// Тип счета
+/// </summary>
 public enum AccountType
 {
     [JsonStringEnumMemberName("Текущий")]

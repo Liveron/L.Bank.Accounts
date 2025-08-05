@@ -5,12 +5,14 @@ using L.Bank.Accounts.Identity;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using L.Bank.Accounts.Common.Swagger;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace L.Bank.Accounts.Extensions;
 
 public static class DependencyInjectionExtensions
 {
-    public static void AddAppControllers(this WebApplicationBuilder builder)
+    public static void AddApplicationControllers(this WebApplicationBuilder builder)
     {
         builder.Services.AddControllers()
             .ConfigureApiBehaviorOptions(options =>
@@ -29,6 +31,8 @@ public static class DependencyInjectionExtensions
         {
             options.OperationFilter<MbResultOperationFilter>();
 
+            options.AddKeycloakAuth();
+
             var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
         });
@@ -45,6 +49,31 @@ public static class DependencyInjectionExtensions
             config.RegisterServicesFromAssemblyContaining<Program>();
 
             config.AddOpenBehavior(typeof(ValidationBehavior<,>));
+        });
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.Authority = "http://keycloak:8080/realms/dev-realm";
+                options.RequireHttpsMetadata = false;
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    RequireSignedTokens = false,
+                    ValidateIssuer = false,
+                };
+            });
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
         });
     }
 }

@@ -4,9 +4,11 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-    command: [ "start-dev" ]
+    command: [ "start-dev", "--import-realm", "--health-enabled=true" ]
+    volumes:
+      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
     ports:
-      - "9090:8080"
+      - "8080:8080"
 
   l.bank.accounts:
     image: ${DOCKER_REGISTRY-}lbankaccounts

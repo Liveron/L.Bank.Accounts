@@ -26,7 +26,7 @@ public class MbResult
     public static MbResult Fail(string message) => new(new MbError([message]));
     public static MbResult Fail(IEnumerable<string> messages) => new(new MbError(messages));
     public static MbResult Fail(MbError error) => new(error);
-
+    public static MbResult Fail(Type resultType, string message) => Fail(resultType, new MbError([message]));
     public static MbResult Fail(Type resultType, MbError error)
     {
         var mbResultType = typeof(MbResult<>).MakeGenericType(resultType);
