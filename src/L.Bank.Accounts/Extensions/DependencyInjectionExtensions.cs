@@ -62,7 +62,7 @@ public static class DependencyInjectionExtensions
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     RequireSignedTokens = false,
-                    ValidateIssuer = false,
+                    ValidateIssuer = false
                 };
             });
 

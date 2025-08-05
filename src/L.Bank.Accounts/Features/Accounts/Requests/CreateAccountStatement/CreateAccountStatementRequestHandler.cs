@@ -27,7 +27,7 @@ public sealed class CreateAccountStatementRequestHandler
                 CounterpartyAccountId = transaction.CounterpartyAccountId,
                 Description = transaction.Description,
                 DateTime = transaction.DateTime,
-                CurrentBalance = balance,
+                CurrentBalance = balance
             };
             transactionVms.Add(transactionVm);
             balance += transaction.IsDebit ? -transaction.Sum : transaction.Sum;

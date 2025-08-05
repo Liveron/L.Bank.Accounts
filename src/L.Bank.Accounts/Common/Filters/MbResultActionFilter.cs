@@ -9,7 +9,8 @@ public class MbResultActionFilter : ActionFilterAttribute
     public override void OnActionExecuted(ActionExecutedContext context)
     {
         var endpoint = context.HttpContext.GetEndpoint();
-        if (endpoint is null) return;
+        if (endpoint is null) 
+            return;
 
         var successStatusCode = endpoint.Metadata
             .GetOrderedMetadata<ProducesResponseTypeAttribute>()
@@ -24,11 +25,11 @@ public class MbResultActionFilter : ActionFilterAttribute
         {
             context.Result = objectResult.Value switch
             {
-                MbResult { IsSuccess: true } mbResult => new ObjectResult(mbResult) { StatusCode = successStatusCode, },
+                MbResult { IsSuccess: true } mbResult => new ObjectResult(mbResult) { StatusCode = successStatusCode },
                 MbResult { IsFailure: true } mbResultError => mbResultError.Error switch
                 {
                     NotFoundError => new NotFoundObjectResult(mbResultError),
-                    _ => new BadRequestObjectResult(mbResultError),
+                    _ => new BadRequestObjectResult(mbResultError)
                 },
                 _ => context.Result
             };

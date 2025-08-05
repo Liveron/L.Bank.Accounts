@@ -22,7 +22,7 @@ public class MbResultExceptionFilter : ExceptionFilterAttribute
                 var errorResult = MbResult.Fail(context.Exception.Message);
                 context.Result = new ObjectResult(errorResult)
                 {
-                    StatusCode = StatusCodes.Status500InternalServerError,
+                    StatusCode = StatusCodes.Status500InternalServerError
                 };
             }
             else if (taskArgument.IsGenericType && taskArgument.GetGenericTypeDefinition() == typeof(MbResult<>))

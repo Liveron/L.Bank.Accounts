@@ -19,6 +19,8 @@ public class UpdateAccountCommandHandler(IAccountsRepository accountsRepository)
                 return result;
         }
 
+
+        // ReSharper disable once ConvertIfStatementToReturnStatement Предлагает плохо читаемый код
         if (command.MaturityDate.HasValue)
             return account.ChangeMaturityDate(command.MaturityDate.Value);
 

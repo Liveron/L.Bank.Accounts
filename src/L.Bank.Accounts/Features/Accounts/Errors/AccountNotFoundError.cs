@@ -7,7 +7,7 @@ public record AccountNotFoundError : NotFoundError
 {
     public AccountNotFoundError(Guid accountId)
         : base($"Не удалось найти счет с ID {accountId}.") { }
-};
+}
 
 public static partial class MbResultFactoryExtensions
 {

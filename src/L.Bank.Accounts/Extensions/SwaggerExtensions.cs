@@ -15,7 +15,7 @@ public static class SwaggerExtensions
             {
                 Implicit = new OpenApiOAuthFlow
                 {
-                    AuthorizationUrl = new Uri("http://localhost:8080/realms/dev-realm/protocol/openid-connect/auth"),
+                    AuthorizationUrl = new Uri("http://localhost:8080/realms/dev-realm/protocol/openid-connect/auth")
                 }
             }
         });
@@ -29,8 +29,7 @@ public static class SwaggerExtensions
                     {
                         Type = ReferenceType.SecurityScheme,
                         Id = "oauth2"
-                    },
-
+                    }
                 },
                 new List<string>()
             }
