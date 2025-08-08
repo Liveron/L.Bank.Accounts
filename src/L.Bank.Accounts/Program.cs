@@ -4,16 +4,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddApplicationServices();
 
-builder.AddAppControllers();
+builder.AddApplicationControllers();
 
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseCors();
+
+app.UseMbResultAuthorization();
+
+app.UseAuthorization();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerOpenApi();
 }
 
 app.MapControllers();

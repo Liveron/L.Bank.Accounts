@@ -1,26 +1,30 @@
-﻿using L.Bank.Accounts.Features.Accounts.Exceptions;
+﻿using L.Bank.Accounts.Common;
+using L.Bank.Accounts.Features.Accounts.Errors;
 using L.Bank.Accounts.Identity;
-using MediatR;
+using L.Bank.Accounts.Identity.Errors;
 
 namespace L.Bank.Accounts.Features.Accounts.OpenAccount;
 
 public sealed class OpenAccountCommandHandler(
     ICurrencyService currencyService, IAccountsRepository accountsRepository, IIdentityService identityService) 
-    : IRequestHandler<OpenAccountCommand, Guid>
+    : RequestHandler<OpenAccountCommand, MbResult<Guid>>
 {
-    public Task<Guid> Handle(OpenAccountCommand request, CancellationToken _)
+    public override async Task<MbResult<Guid>> Handle(OpenAccountCommand request, CancellationToken _)
     {
-        if (!identityService.IdentifyUser(request.OwnerId))
-            throw new UserNotFoundException(request.OwnerId);
+        if (!await identityService.IdentifyUserAsync(request.OwnerId))
+            return ResultFactory.FailUserNotFound<Guid>(request.OwnerId);
 
         if (!currencyService.CheckCurrency(request.Currency))
-            throw new CurrencyNotSupportedException(request.Currency);
+            return ResultFactory.FailCurrencyNotSupported<Guid>(request.Currency);
 
         var accountTerms = AccountTerms.FromName(request.AccountTerms);
-        var account = new Account(Guid.NewGuid(), request.OwnerId, accountTerms, request.Currency);
+        var accountCreationResult = Account.New(
+            Guid.NewGuid(), request.OwnerId, accountTerms, request.Currency, request.MaturityDate, request.Sum);
 
-        var createdAccountId = accountsRepository.AddAccount(account);
+        if (accountCreationResult.IsFailure)
+            return MbResult.Fail<Guid>(accountCreationResult.Error!);
 
-        return Task.FromResult(createdAccountId);
+        var createdAccountId = accountsRepository.AddAccount(accountCreationResult.Value!);
+        return MbResult.Success(createdAccountId);
     }
 }

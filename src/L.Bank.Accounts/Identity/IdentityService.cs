@@ -2,13 +2,13 @@
 
 public interface IIdentityService
 {
-    public bool IdentifyUser(Guid userId);
+    public Task<bool> IdentifyUserAsync(Guid userId);
 }
 
 public class IdentityService : IIdentityService
 {
-    public bool IdentifyUser(Guid userId)
+    public Task<bool> IdentifyUserAsync(Guid userId)
     {
-        return true;
+        return Task.FromResult(true);
     }
 }

@@ -3,17 +3,25 @@ using L.Bank.Accounts.Common.Behaviors;
 using L.Bank.Accounts.Features.Accounts;
 using L.Bank.Accounts.Identity;
 using System.Reflection;
+using System.Text.Json.Serialization;
+using L.Bank.Accounts.Common.Swagger;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace L.Bank.Accounts.Extensions;
 
 public static class DependencyInjectionExtensions
 {
-    public static void AddAppControllers(this WebApplicationBuilder builder)
+    public static void AddApplicationControllers(this WebApplicationBuilder builder)
     {
         builder.Services.AddControllers()
             .ConfigureApiBehaviorOptions(options =>
             {
                 options.SuppressMapClientErrors = true;
+            })
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
     }
 
@@ -21,6 +29,10 @@ public static class DependencyInjectionExtensions
     {
         builder.Services.AddSwaggerGen(options =>
         {
+            options.OperationFilter<MbResultOperationFilter>();
+
+            options.AddKeycloakAuth();
+
             var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
         });
@@ -30,12 +42,38 @@ public static class DependencyInjectionExtensions
         builder.Services.AddScoped<IIdentityService, IdentityService>();
 
         builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+        ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
 
         builder.Services.AddMediatR(config =>
         {
             config.RegisterServicesFromAssemblyContaining<Program>();
 
             config.AddOpenBehavior(typeof(ValidationBehavior<,>));
+        });
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.Authority = "http://keycloak:8080/realms/dev-realm";
+                options.RequireHttpsMetadata = false;
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    RequireSignedTokens = false,
+                    ValidateIssuer = false
+                };
+            });
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
         });
     }
 }

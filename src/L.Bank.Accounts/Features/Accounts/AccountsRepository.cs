@@ -3,7 +3,8 @@
 public interface IAccountsRepository
 {
     public Guid AddAccount(Account account);
-    public Account? GetAccount(Guid accountId);
+    public Task<Account?> GetAccountAsync(Guid accountId, Guid ownerId);
+    public Task<List<Account>> GetAllAccountsAsync(Guid? userId);
 }
 
 public sealed class AccountsRepository : IAccountsRepository
@@ -16,8 +17,18 @@ public sealed class AccountsRepository : IAccountsRepository
         return account.Id;
     }
 
-    public Account? GetAccount(Guid accountId)
+    public Task<Account?> GetAccountAsync(Guid accountId, Guid ownerId)
     {
-        return _accounts.FirstOrDefault(a => a.Id == accountId);
+        var account = _accounts.FirstOrDefault(a => a.Id == accountId && a.OwnerId == ownerId);
+        return Task.FromResult(account);
+    }
+
+    public Task<List<Account>> GetAllAccountsAsync(Guid? userId)
+    {
+        if (!userId.HasValue) 
+            return Task.FromResult(_accounts);
+
+        var accounts =_accounts.Where(a => a.OwnerId == userId).ToList();
+        return Task.FromResult(accounts);
     }
 }

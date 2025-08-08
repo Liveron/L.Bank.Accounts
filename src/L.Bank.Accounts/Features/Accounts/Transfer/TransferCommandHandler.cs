@@ -1,26 +1,27 @@
-﻿using L.Bank.Accounts.Features.Accounts.Exceptions;
-using MediatR;
+﻿using L.Bank.Accounts.Common;
+using L.Bank.Accounts.Features.Accounts.Errors;
 
 namespace L.Bank.Accounts.Features.Accounts.Transfer;
 
 public sealed class TransferCommandHandler(IAccountsRepository accountsRepository) 
-    : IRequestHandler<TransferCommand>
+    : RequestHandler<TransferCommand, MbResult>
 {
-    public Task Handle(TransferCommand request, CancellationToken _)
+    public override async Task<MbResult> Handle(TransferCommand command, CancellationToken _)
     {
-        var accountToDebit = accountsRepository.GetAccount(request.FromAccountId);
-
+        var accountToDebit = await accountsRepository.GetAccountAsync(command.FromAccountId, command.FromAccountOwnerId);
         if (accountToDebit is null)
-            throw new AccountNotFoundException(request.FromAccountId);
+            return ResultFactory.FailAccountNotFound(command.FromAccountId);
 
-        var accountToCredit = accountsRepository.GetAccount(request.ToAccountId);
-
+        var accountToCredit = await accountsRepository.GetAccountAsync(command.ToAccountId, command.ToAccountOwnerId);
         if (accountToCredit is null)
-            throw new AccountNotFoundException(request.ToAccountId);
+            return ResultFactory.FailAccountNotFound(command.ToAccountId);
 
-        accountToDebit.Debit(request.Sum, accountToCredit.Id, request.Description);
-        accountToCredit.Credit(request.Sum, accountToDebit.Id, request.Description);
+        var debitResult = accountToDebit.Debit(command.Sum, accountToCredit.Id, command.Description);
+        if (debitResult.IsFailure)
+            return debitResult;
 
-        return Task.CompletedTask; 
+        accountToCredit.Credit(command.Sum, accountToDebit.Id, command.Description);
+
+        return MbResult.Success();
     }
 }

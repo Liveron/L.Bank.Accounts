@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using JetBrains.Annotations;
 
 namespace L.Bank.Accounts.Features.Accounts.Transfer;
 
+[UsedImplicitly]
 public sealed class TransferCommandValidator : AbstractValidator<TransferCommand>
 {
     public TransferCommandValidator()

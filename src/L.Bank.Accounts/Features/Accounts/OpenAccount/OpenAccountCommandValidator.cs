@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using JetBrains.Annotations;
 
 namespace L.Bank.Accounts.Features.Accounts.OpenAccount;
 
+[UsedImplicitly]
 public class OpenAccountCommandValidator : AbstractValidator<OpenAccountCommand>
 {
     public OpenAccountCommandValidator()
@@ -21,6 +23,10 @@ public class OpenAccountCommandValidator : AbstractValidator<OpenAccountCommand>
         RuleFor(x => x.Currency)
             .Matches("^[A-Z]{3}$")
             .WithMessage("Currency must be a valid 3-letter ISO currency code.");
+
+        RuleFor(x => x.MaturityDate)
+            .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.UtcNow))
+            .WithMessage("Дата погашения счета не может быть раньше текущей.");
     }
 
     private static bool BeAccountTerms(string name) => AccountTerms.TryFromName(name, out _);

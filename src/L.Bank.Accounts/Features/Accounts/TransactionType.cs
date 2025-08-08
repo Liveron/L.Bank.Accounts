@@ -2,7 +2,9 @@
 
 namespace L.Bank.Accounts.Features.Accounts;
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
+/// <summary>
+/// Тип транзакции
+/// </summary>
 public enum TransactionType
 {
     [JsonStringEnumMemberName("Кредит")]
