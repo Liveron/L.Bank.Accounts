@@ -16,6 +16,8 @@ public sealed class TransferCommandHandler(IAccountsRepository accountsRepositor
         if (accountToCredit is null)
             return ResultFactory.FailAccountNotFound(command.ToAccountId);
 
+        var sumBeforeTransfer = accountToDebit.Balance + accountToCredit.Balance;
+
         var debitResult = accountToDebit.Debit(command.Sum, accountToCredit.Id, command.Description);
         if (debitResult.IsFailure)
             return debitResult;

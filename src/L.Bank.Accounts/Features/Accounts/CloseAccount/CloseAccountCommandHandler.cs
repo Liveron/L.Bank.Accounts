@@ -1,12 +1,13 @@
 ﻿using L.Bank.Accounts.Common;
-using L.Bank.Accounts.Features.Accounts.Errors;
+using L.Bank.Accounts.Features.Accounts.AccrueInterest;
 using L.Bank.Accounts.Identity;
 using L.Bank.Accounts.Identity.Errors;
+using MediatR;
 
 namespace L.Bank.Accounts.Features.Accounts.CloseAccount;
 
 public sealed class CloseAccountCommandHandler(
-    IAccountsRepository accounts, IIdentityService identityService) 
+    IAccountsRepository accounts, IIdentityService identityService, IMediator mediator) 
     : RequestHandler<CloseAccountCommand, MbResult>
 {
     public override async Task<MbResult> Handle(CloseAccountCommand command, CancellationToken cancellationToken)
@@ -14,7 +15,7 @@ public sealed class CloseAccountCommandHandler(
         if (!await identityService.IdentifyUserAsync(command.OwnerId))
             return ResultFactory.FailUserNotFound(command.OwnerId);
 
-        var account = await accounts.GetAccountAsync(command.AccountId, command.OwnerId);
-        return account is not null ? account.Close() : ResultFactory.FailAccountNotFound(command.AccountId);
+        var accrueInterestCommand = new AccrueInterestCommand(command.AccountId);
+        return await mediator.Send(accrueInterestCommand, cancellationToken);
     }
 }

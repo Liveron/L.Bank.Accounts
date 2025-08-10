@@ -3,6 +3,7 @@ using System;
 using L.Bank.Accounts.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace L.Bank.Accounts.Migrations
 {
     [DbContext(typeof(AccountsDbContext))]
-    partial class AccountsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250810112349_ProceduresAdded")]
+    partial class ProceduresAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,47 +29,36 @@ namespace L.Bank.Accounts.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Balance")
-                        .HasColumnType("numeric")
-                        .HasColumnName("balance");
+                        .HasColumnType("numeric");
 
                     b.Property<DateOnly?>("CloseDate")
-                        .HasColumnType("date")
-                        .HasColumnName("close_date");
+                        .HasColumnType("date");
 
                     b.Property<string>("Currency")
                         .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("currency");
+                        .HasColumnType("text");
 
                     b.Property<decimal>("InterestRate")
-                        .HasColumnType("numeric")
-                        .HasColumnName("interest_rate");
+                        .HasColumnType("numeric");
 
                     b.Property<DateOnly?>("MaturityDate")
-                        .HasColumnType("date")
-                        .HasColumnName("maturity_date");
+                        .HasColumnType("date");
 
                     b.Property<DateOnly>("OpenDate")
-                        .HasColumnType("date")
-                        .HasColumnName("open_date");
+                        .HasColumnType("date");
 
                     b.Property<Guid>("OwnerId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("owner_id");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Type")
-                        .HasColumnType("integer")
-                        .HasColumnName("type");
+                        .HasColumnType("integer");
 
-                    b.HasKey("Id")
-                        .HasName("pk_accounts");
+                    b.HasKey("Id");
 
-                    b.HasIndex("OwnerId")
-                        .HasDatabaseName("ix_accounts_owner_id");
+                    b.HasIndex("OwnerId");
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("OwnerId"), "hash");
 
@@ -77,43 +69,33 @@ namespace L.Bank.Accounts.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("AccountId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("account_id");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("CounterpartyAccountId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("counterparty_account_id");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("DateTime")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_time");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
+                        .HasColumnType("text");
 
                     b.Property<decimal>("Sum")
-                        .HasColumnType("numeric")
-                        .HasColumnName("sum");
+                        .HasColumnType("numeric");
 
                     b.Property<int>("Type")
-                        .HasColumnType("integer")
-                        .HasColumnName("type");
+                        .HasColumnType("integer");
 
-                    b.HasKey("Id")
-                        .HasName("pk_transactions");
+                    b.HasKey("Id");
 
-                    b.HasIndex("DateTime")
-                        .HasDatabaseName("ix_transactions_date_time");
+                    b.HasIndex("DateTime");
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("DateTime"), "GIST");
 
-                    b.HasIndex("AccountId", "DateTime")
-                        .HasDatabaseName("ix_transactions_account_id_date_time");
+                    b.HasIndex("AccountId", "DateTime");
 
                     b.ToTable("transactions", (string)null);
                 });
@@ -124,8 +106,7 @@ namespace L.Bank.Accounts.Migrations
                         .WithMany("Transactions")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_transactions_accounts_account_id");
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("L.Bank.Accounts.Features.Accounts.Account", b =>

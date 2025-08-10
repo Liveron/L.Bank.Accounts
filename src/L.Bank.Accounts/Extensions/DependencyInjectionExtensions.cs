@@ -49,7 +49,8 @@ public static class DependencyInjectionExtensions
         builder.Services.AddDbContext<AccountsDbContext>(options =>
         {
             var connectionString = builder.Configuration.GetConnectionString("Postgres");
-            options.UseNpgsql(connectionString);
+            options.UseNpgsql(connectionString)
+                .UseSnakeCaseNamingConvention();
         });
 
         builder.Services.AddMediatR(config =>
