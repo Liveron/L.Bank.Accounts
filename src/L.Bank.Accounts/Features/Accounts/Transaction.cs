@@ -5,16 +5,16 @@ public sealed class Transaction(
     Guid accountId,
     TransactionType type,
     decimal sum,
-    Guid? counterPartyAccountId = null,
+    Guid? counterpartyAccountId = null,
     string? description = null)
 {
-    public Guid Id { get; private set; } = id;
+    public Guid Id { get; init; } = id;
     // ReSharper disable once UnusedMember.Global Необходимо по заданию
-    public Guid AccountId { get; private set; } = accountId;
-    public Guid? CounterpartyAccountId { get; private set; } = counterPartyAccountId;
-    public decimal Sum { get; private set; } = sum;
-    public string? Description { get; private set; } = description;
-    public DateTime DateTime { get; private set; } = DateTime.UtcNow;
-    public TransactionType Type { get; } = type;
+    public Guid AccountId { get; init; } = accountId;
+    public Guid? CounterpartyAccountId { get; init; } = counterpartyAccountId;
+    public decimal Sum { get; init; } = sum;
+    public string? Description { get; init; } = description;
+    public DateTime DateTime { get; init; } = DateTime.UtcNow;
+    public TransactionType Type { get; init; } = type;
     public bool IsDebit => Type == TransactionType.Debit;
 }

@@ -5,7 +5,9 @@ using L.Bank.Accounts.Identity;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using L.Bank.Accounts.Common.Swagger;
+using L.Bank.Accounts.Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace L.Bank.Accounts.Extensions;
@@ -43,6 +45,12 @@ public static class DependencyInjectionExtensions
 
         builder.Services.AddValidatorsFromAssemblyContaining<Program>();
         ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
+
+        builder.Services.AddDbContext<AccountsDbContext>(options =>
+        {
+            var connectionString = builder.Configuration.GetConnectionString("Postgres");
+            options.UseNpgsql(connectionString);
+        });
 
         builder.Services.AddMediatR(config =>
         {

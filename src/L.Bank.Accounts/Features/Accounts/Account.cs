@@ -17,6 +17,21 @@ public sealed class Account
     public DateOnly? CloseDate { get; private set; }
     public DateOnly? MaturityDate { get; private set; }
 
+    public Account(Guid id, Guid ownerId, AccountType type, decimal interestRate, 
+        string currency, decimal balance, DateOnly openDate, DateOnly? closeDate, 
+        DateOnly? maturityDate)
+    {
+        Id = id; 
+        OwnerId = ownerId;
+        Type = type;
+        InterestRate = interestRate;
+        Currency = currency;
+        Balance = balance;
+        OpenDate = openDate;
+        CloseDate = closeDate;
+        MaturityDate = maturityDate;
+    }
+
     private Account(Guid id, Guid ownerId, AccountTerms accountTerm, string currency, DateOnly openDate, DateOnly? maturityDate)
     {
         Id = id;
