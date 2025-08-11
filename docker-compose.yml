@@ -4,7 +4,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-    command: [ "start-dev", "--import-realm", "--health-enabled=true" ]
+    command: [ "start-dev", "--import-realm" ]
     volumes:
       - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
     ports:
@@ -15,9 +15,11 @@ services:
     build:
       context: .
       dockerfile: src/L.Bank.Accounts/Dockerfile
+    environment:
+      - ConnectionStrings__Postgres=Host=postgres;Port=5432;Username=postgres;Password=postgres
     depends_on:
       keycloak:
-        condition: service_healthy
+        condition: service_started
       postgres:
         condition: service_healthy
   
@@ -28,8 +30,15 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+      - postgresql-logs:/var/log/postgresql 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 30s
       timeout: 10s
       retries: 3
+
+volumes:
+  postgresql-data:
+  postgresql-logs:
