@@ -44,7 +44,7 @@ public sealed class Account
     }
 
     public static MbResult<Account> New(
-        Guid id, Guid ownerId, AccountTerms accountTerm, string currency, DateOnly? maturityDate, decimal sum = 0)
+        Guid id, Guid ownerId, AccountTerms accountTerm, string currency, DateOnly? maturityDate = null, decimal sum = 0)
     {
         if (accountTerm.AccountType == AccountType.Deposit && maturityDate == null)
             return MbResult.Fail<Account>("Для депозитного счета необходимо указать дату погашения.");

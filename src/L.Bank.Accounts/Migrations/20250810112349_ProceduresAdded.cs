@@ -22,6 +22,19 @@ namespace L.Bank.Accounts.Migrations
                 END;
                 $$
             ");
+
+            migrationBuilder.Sql(@"
+                CREATE OR REPLACE PROCEDURE accrue_all_interests()
+                LANGUAGE plpgsql
+                AS $$
+                BEGIN
+                    UPDATE accounts
+                    SET balance * (interest_rate / 100) * ((maturity_date - open_date) / 365),
+                        close_date = CURRENT_DATE
+                    WHERE CURRENT_DATE = maturity_date;
+                END;
+                $$
+            ");
         }
 
         /// <inheritdoc />
