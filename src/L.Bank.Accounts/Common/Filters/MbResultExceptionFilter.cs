@@ -58,6 +58,8 @@ public class MbResultExceptionFilter : ExceptionFilterAttribute
     {
         var taskArgument = returnType.GetGenericArguments().First();
 
+
+        // ReSharper disable once InvertIf Предлагает менее читаемый код
         if (taskArgument.IsGenericType && taskArgument.GetGenericTypeDefinition() == typeof(MbResult<>))
         {
             var genericArgument = returnType.GetGenericArguments().First();

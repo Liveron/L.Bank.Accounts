@@ -3,7 +3,7 @@ using MediatR;
 
 namespace L.Bank.Accounts.Common;
 
-public class MbResult(MbError? error = null)
+public class MbResult
 {
     /// <summary>
     /// Свойство, определяющее, успешно ли завершилась операция
@@ -12,12 +12,18 @@ public class MbResult(MbError? error = null)
     /// <summary>
     /// Ошибка, возращаемая при неуспешном завершении операции
     /// </summary>
-    public MbError? Error { get; } = error;
+    public MbError? Error { get; }
 
     /// <summary>
     /// Свойство, определяющее, завершилась ли операция с ошибкой
     /// </summary>
     public bool IsFailure => Error is not null;
+
+    // ReSharper disable once ConvertToPrimaryConstructor Нужен для рефлекии
+    public MbResult(MbError? error = null)
+    {
+        Error = error;
+    }
 
     public static MbResult Fail(string message) => new(new MbError([message]));
     public static MbResult Fail(IEnumerable<string> messages) => new(new MbError(messages));
@@ -27,7 +33,7 @@ public class MbResult(MbError? error = null)
     {
         var mbResultType = typeof(MbResult<>).MakeGenericType(resultType);
         var constructor = mbResultType.GetConstructor(
-            BindingFlags.NonPublic | BindingFlags.Instance, null, [resultType, typeof(MbError)], null);
+             BindingFlags.Public | BindingFlags.Instance, null, [resultType, typeof(MbError)], null);
 
         var defaultValue = resultType.IsValueType ? Activator.CreateInstance(resultType) : null;
 
@@ -40,13 +46,18 @@ public class MbResult(MbError? error = null)
     public static MbResult<TResult> Success<TResult>(TResult value) => new(value);
 }
 
-public sealed class MbResult<TResult>(TResult? value, MbError? error = null) 
-    : MbResult(error), IRequest
+public sealed class MbResult<TResult> : MbResult, IRequest
 {
     /// <summary>
     /// Значение, возвращаемое при успешном завершении операции
     /// </summary>
-    public TResult? Value { get; private set; } = value;
+    public TResult? Value { get; private set; }
+
+    // ReSharper disable once ConvertToPrimaryConstructor Нужен для рефлекии
+    public MbResult(TResult? value, MbError? error = null) : base(error)
+    {
+        Value = value;
+    }
 }
 
 /// <summary>

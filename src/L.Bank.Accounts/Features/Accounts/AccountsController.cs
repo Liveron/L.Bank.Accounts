@@ -150,7 +150,7 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// Сформировать выписку по нескольким счетам
     /// </summary>
     /// <param name="query">Объект запроса, описывающий операция формирования выписки по нескольким счетам</param>
-    [HttpGet("statement")]
+    [HttpPost("statement")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<MbResult<List<AccountStatementVm>>> GetManyAccountStatements(
         [FromBody] GetManyAccountStatementsQuery query)

@@ -17,8 +17,12 @@ public sealed class Account
     public DateOnly OpenDate { get; }
     public DateOnly? CloseDate { get; private set; }
     public DateOnly? MaturityDate { get; private set; }
+
+    // ReSharper disable once IdentifierTypo Небходимо для совместимости с БД
     public uint Xmin { get; init; }
 
+
+    // ReSharper disable once ConvertToPrimaryConstructor Первичный конструктор менее читаем
     public Account(Guid id, Guid ownerId, AccountType type, decimal interestRate, 
         string currency, decimal balance, DateOnly openDate, DateOnly? closeDate, DateOnly? maturityDate)
     {

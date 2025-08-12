@@ -1,6 +1,4 @@
 ﻿using System.Data;
-using L.Bank.Accounts.Database;
-using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace L.Bank.Accounts.Features.Accounts.AccrueAllInterests;

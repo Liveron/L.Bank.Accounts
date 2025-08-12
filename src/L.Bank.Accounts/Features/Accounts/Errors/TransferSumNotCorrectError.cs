@@ -12,13 +12,6 @@ public sealed record TransferSumNotCorrectError : ConflictError
 
 public static partial class MbResultFactoryExtensions
 {
-    public static MbResult<TResult> FailTransferSumNotCorrect<TResult>(
-        this IMbResultFactory factory, decimal expectedSum, decimal actualSum)
-    {
-        var error = new TransferSumNotCorrectError(expectedSum, actualSum);
-        return MbResult.Fail<TResult>(error);
-    }
-
     public static MbResult FailTransferSumNotCorrect(
         this IMbResultFactory factory, decimal expectedSum, decimal actualSum)
     {
