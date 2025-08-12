@@ -3,7 +3,7 @@ using MediatR;
 
 namespace L.Bank.Accounts.Common;
 
-public class MbResult
+public class MbResult(MbError? error = null)
 {
     /// <summary>
     /// Свойство, определяющее, успешно ли завершилась операция
@@ -12,16 +12,12 @@ public class MbResult
     /// <summary>
     /// Ошибка, возращаемая при неуспешном завершении операции
     /// </summary>
-    public MbError? Error { get; }
+    public MbError? Error { get; } = error;
+
     /// <summary>
     /// Свойство, определяющее, завершилась ли операция с ошибкой
     /// </summary>
     public bool IsFailure => Error is not null;
-
-    protected MbResult(MbError? error = null)
-    {
-        Error = error;
-    }
 
     public static MbResult Fail(string message) => new(new MbError([message]));
     public static MbResult Fail(IEnumerable<string> messages) => new(new MbError(messages));
@@ -44,15 +40,13 @@ public class MbResult
     public static MbResult<TResult> Success<TResult>(TResult value) => new(value);
 }
 
-public sealed class MbResult<TResult> : MbResult, IRequest
+public sealed class MbResult<TResult>(TResult? value, MbError? error = null) 
+    : MbResult(error), IRequest
 {
     /// <summary>
     /// Значение, возвращаемое при успешном завершении операции
     /// </summary>
-    public TResult? Value { get; private set; }
-
-    internal MbResult(TResult? value, MbError? error = null) 
-        : base(error) => Value = value; 
+    public TResult? Value { get; private set; } = value;
 }
 
 /// <summary>

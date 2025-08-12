@@ -11,10 +11,10 @@ public sealed class AccountsDbContext(DbContextOptions<AccountsDbContext> option
     public IDbContextTransaction? CurrentTransaction { get; private set; }
     public bool HasActiveTransaction => CurrentTransaction != null;
 
-    public DbSet<Account> Accounts => null!;
-    public DbSet<Transaction> Transactions => null!;
+    public DbSet<Account> Accounts { get; set; }
 
-    public async Task<IDbContextTransaction?> BeginTransactionAsync(IsolationLevel isolationLevel)
+    public async Task<IDbContextTransaction?> BeginTransactionAsync(
+        IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
     {
         if (CurrentTransaction != null)
             return null;

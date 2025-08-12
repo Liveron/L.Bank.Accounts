@@ -39,7 +39,7 @@ public sealed class TransferCommandHandler(
 
         var sumAfterTransfer = accountToDebitAfterTransfer!.Balance + accountToCreditAfterTransfer!.Balance;
 
-        if (sumAfterTransfer == sumBeforeTransfer)
+        if (sumAfterTransfer != sumBeforeTransfer)
         {
             dbContext.RollbackTransaction();
             return ResultFactory.FailTransferSumNotCorrect(sumBeforeTransfer, sumAfterTransfer);

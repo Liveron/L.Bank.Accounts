@@ -10,6 +10,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseBackgroundJobs();
+
 app.UseCors();
 
 app.UseMbResultAuthorization();

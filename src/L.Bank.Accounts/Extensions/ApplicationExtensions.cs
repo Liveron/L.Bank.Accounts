@@ -22,9 +22,8 @@ public static class ApplicationExtensions
 
     public static void UseBackgroundJobs(this WebApplication app)
     {
-        RecurringJob.AddOrUpdate<IAccrueAllInterestsJob>(
-            "accrue-all-interests",
-            j => j.ExecuteAsync(),
-            Cron.Daily);
+        app.Services.GetRequiredService<IRecurringJobManager>()
+            .AddOrUpdate<IAccrueAllInterestsJob>(
+                "accrue-all-interests", job => job.ExecuteAsync(), Cron.Daily);
     }
 }

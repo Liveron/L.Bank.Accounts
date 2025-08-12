@@ -16,6 +16,16 @@ public sealed class AccountEntityTypeConfiguration : IEntityTypeConfiguration<Ac
         builder.Property(a => a.Id);
         builder.Property(a => a.Type);
         builder.Property(a => a.OpenDate);
+        builder.Property(a => a.Currency)
+            .HasMaxLength(3);
+
+        //builder.Metadata.FindNavigation(nameof(Account.Transactions))!
+        //    .SetField("_transactions");
+
+        builder.Property(a => a.Xmin)
+            .HasColumnType("xid")
+            .ValueGeneratedOnAddOrUpdate()
+            .IsConcurrencyToken();
 
         builder.HasMany(a => a.Transactions)
             .WithOne();

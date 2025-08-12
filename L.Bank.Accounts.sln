@@ -14,6 +14,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен
 		realm-export.json = realm-export.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5BB32044-A125-4CB0-A4EB-FFBE3A1D1FFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L.Bank.Accounts.UnitTests", "..\L.Bank.Accounts.UnitTests\L.Bank.Accounts.UnitTests.csproj", "{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L.Bank.Accounts.IntegrationTests", "..\L.Bank.Accounts.IntegrationTests\L.Bank.Accounts.IntegrationTests.csproj", "{A7402EFE-3975-4E59-AA1C-55E86121A782}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,12 +34,22 @@ Global
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7402EFE-3975-4E59-AA1C-55E86121A782}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7402EFE-3975-4E59-AA1C-55E86121A782}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7402EFE-3975-4E59-AA1C-55E86121A782}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7402EFE-3975-4E59-AA1C-55E86121A782}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2B9C0765-C9AD-49BE-A0F1-0FF47DCB9BB8} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE} = {5BB32044-A125-4CB0-A4EB-FFBE3A1D1FFA}
+		{A7402EFE-3975-4E59-AA1C-55E86121A782} = {5BB32044-A125-4CB0-A4EB-FFBE3A1D1FFA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {35D5D542-43A7-46AB-955B-FE08E678905F}

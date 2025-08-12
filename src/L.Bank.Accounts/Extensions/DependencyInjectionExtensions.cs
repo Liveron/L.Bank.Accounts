@@ -8,6 +8,7 @@ using Hangfire;
 using Hangfire.PostgreSql;
 using L.Bank.Accounts.Common.Swagger;
 using L.Bank.Accounts.Database;
+using L.Bank.Accounts.Features.Accounts.AccrueAllInterests;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -48,6 +49,9 @@ public static class DependencyInjectionExtensions
                 .UseSnakeCaseNamingConvention();
         });
 
+        builder.Services.AddMigrations<AccountsDbContext>();
+
+        builder.Services.AddScoped<IAccrueAllInterestsJob, AccrueAllInterestsJob>();
         builder.Services.AddScoped<IAccountsRepository, AccountsRepository>();
         builder.Services.AddScoped<ICurrencyService, CurrencyService>();
         builder.Services.AddScoped<IIdentityService, IdentityService>();

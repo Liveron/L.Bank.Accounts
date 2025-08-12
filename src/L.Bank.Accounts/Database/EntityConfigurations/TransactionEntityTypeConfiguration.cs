@@ -10,6 +10,9 @@ public sealed class TransactionEntityTypeConfiguration : IEntityTypeConfiguratio
     {
         builder.ToTable("transactions");
 
+        builder.Property(t => t.Description)
+            .HasMaxLength(200);
+
         builder.HasIndex(t => t.DateTime)
             .HasMethod("GIST");
 
