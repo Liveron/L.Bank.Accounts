@@ -15,8 +15,13 @@ public sealed class ChangeInterestRateCommandHandler(
 
         var account = await accountsRepository.GetAccountAsync(query.AccountId, query.OwnerId);
 
-        return account is not null 
-            ? account.ChangeInterestRate(query.InterestRate) 
-            : ResultFactory.FailAccountNotFound(query.AccountId);
+        if (account is null)
+            return ResultFactory.FailAccountNotFound(query.AccountId);
+
+        var result = account.ChangeInterestRate(query.InterestRate);
+
+        await accountsRepository.SaveChangesAsync();
+
+        return result;
     }
 }

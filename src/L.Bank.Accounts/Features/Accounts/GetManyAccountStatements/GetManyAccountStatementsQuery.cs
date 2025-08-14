@@ -13,7 +13,7 @@ public sealed record GetManyAccountStatementsQuery
     /// <summary>
     /// Коллекция идентификаторов счетов
     /// </summary>
-    public required IEnumerable<Guid>? AccountIds { get; init; }
+    public IEnumerable<Guid>? AccountIds { get; init; }
     /// <summary>
     /// Начальная дата периода, за который запрашивается выписка
     /// </summary>

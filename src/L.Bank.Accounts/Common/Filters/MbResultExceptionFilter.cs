@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using L.Bank.Accounts.Common.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -10,34 +11,61 @@ public class MbResultExceptionFilter : ExceptionFilterAttribute
     {
         var endpoint = context.HttpContext.GetEndpoint();
         var actionDescriptor = endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>();
+
         if (actionDescriptor is null) 
             return;
 
         var returnType = actionDescriptor.MethodInfo.ReturnType;
-        if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>))
+
+        if (!IsMbResultTask(returnType))
+            return;
+
+        var (statusCode, errorMessage) = GetErrorDetails(context.Exception);
+
+        var errorResult = CreateErrorResult(returnType, errorMessage);
+
+        context.Result = new ObjectResult(errorResult)
         {
-            var taskArgument = returnType.GetGenericArguments().First();
-            if (taskArgument == typeof(MbResult))
-            {
-                var errorResult = MbResult.Fail(context.Exception.Message);
-                context.Result = new ObjectResult(errorResult)
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
-            }
-            else if (taskArgument.IsGenericType && taskArgument.GetGenericTypeDefinition() == typeof(MbResult<>))
-            {
-                var genericArgument = taskArgument.GetGenericArguments().First();
-                var errorResult = MbResult.Fail(genericArgument, context.Exception.Message);
-                context.Result = new ObjectResult(errorResult)
-                {
-                    StatusCode = StatusCodes.Status500InternalServerError
-                };
-            }
-        }
+            StatusCode = statusCode
+        };
 
         context.ExceptionHandled = true;
             
         base.OnException(context);
+    }
+
+    private static bool IsMbResultTask(Type returnType)
+    {
+        if (!returnType.IsGenericType || returnType.GetGenericTypeDefinition() != typeof(Task<>))
+            return false;
+
+        var taskArgument = returnType.GetGenericArguments().First();
+
+        return taskArgument == typeof(MbResult) ||
+               (taskArgument.IsGenericType && taskArgument.GetGenericTypeDefinition() == typeof(MbResult<>));
+    }
+
+    private static (int statusCode, string errorMessage) GetErrorDetails(Exception exception)
+    {
+        return exception switch
+        {
+            ConcurrencyException concurrencyEx => (StatusCodes.Status409Conflict, concurrencyEx.Message),
+            _ => (StatusCodes.Status500InternalServerError, "An internal server error occurred.")
+        };
+    }
+
+    private static MbResult CreateErrorResult(Type returnType, string errorMessage)
+    {
+        var taskArgument = returnType.GetGenericArguments().First();
+
+
+        // ReSharper disable once InvertIf Предлагает менее читаемый код
+        if (taskArgument.IsGenericType && taskArgument.GetGenericTypeDefinition() == typeof(MbResult<>))
+        {
+            var genericArgument = returnType.GetGenericArguments().First();
+            return MbResult.Fail(genericArgument, errorMessage);
+        }
+
+        return MbResult.Fail(errorMessage);
     }
 }

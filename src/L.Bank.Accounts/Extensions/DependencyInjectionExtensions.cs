@@ -4,8 +4,13 @@ using L.Bank.Accounts.Features.Accounts;
 using L.Bank.Accounts.Identity;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Hangfire;
+using Hangfire.PostgreSql;
 using L.Bank.Accounts.Common.Swagger;
+using L.Bank.Accounts.Database;
+using L.Bank.Accounts.Features.Accounts.AccrueAllInterests;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace L.Bank.Accounts.Extensions;
@@ -37,12 +42,31 @@ public static class DependencyInjectionExtensions
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
         });
 
-        builder.Services.AddSingleton<IAccountsRepository, AccountsRepository>();
+        var connectionString = builder.Configuration.GetConnectionString("Postgres");
+        builder.Services.AddDbContext<AccountsDbContext>(options =>
+        {
+            options.UseNpgsql(connectionString)
+                .UseSnakeCaseNamingConvention();
+        });
+
+        builder.Services.AddMigrations<AccountsDbContext>();
+
+        builder.Services.AddScoped<IAccrueAllInterestsJob, AccrueAllInterestsJob>();
+        builder.Services.AddScoped<IAccountsRepository, AccountsRepository>();
         builder.Services.AddScoped<ICurrencyService, CurrencyService>();
         builder.Services.AddScoped<IIdentityService, IdentityService>();
 
         builder.Services.AddValidatorsFromAssemblyContaining<Program>();
         ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
+
+        builder.Services.AddHangfire(options =>
+        {
+            options.UsePostgreSqlStorage(o =>
+            {
+                o.UseNpgsqlConnection(connectionString);
+            });
+        });
+        builder.Services.AddHangfireServer();
 
         builder.Services.AddMediatR(config =>
         {

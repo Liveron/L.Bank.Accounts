@@ -11,9 +11,5 @@ public sealed class ChangeInterestRateCommandValidator : AbstractValidator<Chang
         RuleFor(c => c.AccountId)
             .NotEmpty()
             .WithMessage("Account ID is required.");
-
-        RuleFor(c => c.InterestRate)
-            .NotEmpty()
-            .WithMessage("Interest rate is required.");
     }
 }

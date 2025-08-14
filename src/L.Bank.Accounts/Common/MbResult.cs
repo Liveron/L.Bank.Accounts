@@ -13,12 +13,14 @@ public class MbResult
     /// Ошибка, возращаемая при неуспешном завершении операции
     /// </summary>
     public MbError? Error { get; }
+
     /// <summary>
     /// Свойство, определяющее, завершилась ли операция с ошибкой
     /// </summary>
     public bool IsFailure => Error is not null;
 
-    protected MbResult(MbError? error = null)
+    // ReSharper disable once ConvertToPrimaryConstructor Нужен для рефлекии
+    public MbResult(MbError? error = null)
     {
         Error = error;
     }
@@ -31,7 +33,7 @@ public class MbResult
     {
         var mbResultType = typeof(MbResult<>).MakeGenericType(resultType);
         var constructor = mbResultType.GetConstructor(
-            BindingFlags.NonPublic | BindingFlags.Instance, null, [resultType, typeof(MbError)], null);
+             BindingFlags.Public | BindingFlags.Instance, null, [resultType, typeof(MbError)], null);
 
         var defaultValue = resultType.IsValueType ? Activator.CreateInstance(resultType) : null;
 
@@ -51,8 +53,11 @@ public sealed class MbResult<TResult> : MbResult, IRequest
     /// </summary>
     public TResult? Value { get; private set; }
 
-    internal MbResult(TResult? value, MbError? error = null) 
-        : base(error) => Value = value; 
+    // ReSharper disable once ConvertToPrimaryConstructor Нужен для рефлекии
+    public MbResult(TResult? value, MbError? error = null) : base(error)
+    {
+        Value = value;
+    }
 }
 
 /// <summary>

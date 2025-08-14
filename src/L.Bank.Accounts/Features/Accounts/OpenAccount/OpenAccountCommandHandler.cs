@@ -25,6 +25,8 @@ public sealed class OpenAccountCommandHandler(
             return MbResult.Fail<Guid>(accountCreationResult.Error!);
 
         var createdAccountId = accountsRepository.AddAccount(accountCreationResult.Value!);
+        await accountsRepository.SaveChangesAsync();
+
         return MbResult.Success(createdAccountId);
     }
 }

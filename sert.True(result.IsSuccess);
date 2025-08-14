@@ -1,0 +1,156 @@
+[1mdiff --git a/L.Bank.Accounts.sln b/L.Bank.Accounts.sln[m
+[1mindex 102377c..559f3c0 100644[m
+[1m--- a/L.Bank.Accounts.sln[m
+[1m+++ b/L.Bank.Accounts.sln[m
+[36m@@ -14,6 +14,10 @@[m [mProject("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен[m
+ 		realm-export.json = realm-export.json[m
+ 	EndProjectSection[m
+ EndProject[m
+[32m+[m[32mProject("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5BB32044-A125-4CB0-A4EB-FFBE3A1D1FFA}"[m
+[32m+[m[32mEndProject[m
+[32m+[m[32mProject("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L.Bank.Accounts.UnitTests", "..\L.Bank.Accounts.UnitTests\L.Bank.Accounts.UnitTests.csproj", "{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE}"[m
+[32m+[m[32mEndProject[m
+ Global[m
+ 	GlobalSection(SolutionConfigurationPlatforms) = preSolution[m
+ 		Debug|Any CPU = Debug|Any CPU[m
+[36m@@ -28,12 +32,17 @@[m [mGlobal[m
+ 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU[m
+ 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU[m
+ 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU[m
+[32m+[m		[32m{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU[m
+[32m+[m		[32m{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE}.Debug|Any CPU.Build.0 = Debug|Any CPU[m
+[32m+[m		[32m{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE}.Release|Any CPU.ActiveCfg = Release|Any CPU[m
+[32m+[m		[32m{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE}.Release|Any CPU.Build.0 = Release|Any CPU[m
+ 	EndGlobalSection[m
+ 	GlobalSection(SolutionProperties) = preSolution[m
+ 		HideSolutionNode = FALSE[m
+ 	EndGlobalSection[m
+ 	GlobalSection(NestedProjects) = preSolution[m
+ 		{2B9C0765-C9AD-49BE-A0F1-0FF47DCB9BB8} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}[m
+[32m+[m		[32m{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE} = {5BB32044-A125-4CB0-A4EB-FFBE3A1D1FFA}[m
+ 	EndGlobalSection[m
+ 	GlobalSection(ExtensibilityGlobals) = postSolution[m
+ 		SolutionGuid = {35D5D542-43A7-46AB-955B-FE08E678905F}[m
+[1mdiff --git a/src/L.Bank.Accounts/Extensions/ApplicationExtensions.cs b/src/L.Bank.Accounts/Extensions/ApplicationExtensions.cs[m
+[1mindex 899cc99..994a5e5 100644[m
+[1m--- a/src/L.Bank.Accounts/Extensions/ApplicationExtensions.cs[m
+[1m+++ b/src/L.Bank.Accounts/Extensions/ApplicationExtensions.cs[m
+[36m@@ -1,4 +1,6 @@[m
+[31m-﻿using L.Bank.Accounts.Common.Middlewares;[m
+[32m+[m[32m﻿using Hangfire;[m
+[32m+[m[32musing L.Bank.Accounts.Common.Middlewares;[m
+[32m+[m[32musing L.Bank.Accounts.Features.Accounts.AccrueAllInterests;[m
+ [m
+ namespace L.Bank.Accounts.Extensions;[m
+ [m
+[36m@@ -17,4 +19,12 @@[m [mpublic static class ApplicationExtensions[m
+     {[m
+         app.UseMiddleware<MbResultUnauthorizedMiddleware>();[m
+     }[m
+[32m+[m
+[32m+[m[32m    public static void UseBackgroundJobs(this WebApplication app)[m
+[32m+[m[32m    {[m
+[32m+[m[32m        RecurringJob.AddOrUpdate<IAccrueAllInterestsJob>([m
+[32m+[m[32m            "accrue-all-interests",[m
+[32m+[m[32m            j => j.ExecuteAsync(),[m
+[32m+[m[32m            Cron.Daily);[m
+[32m+[m[32m    }[m
+ }[m
+[1mdiff --git a/src/L.Bank.Accounts/Extensions/DependencyInjectionExtensions.cs b/src/L.Bank.Accounts/Extensions/DependencyInjectionExtensions.cs[m
+[1mindex d9a0e45..7888e91 100644[m
+[1m--- a/src/L.Bank.Accounts/Extensions/DependencyInjectionExtensions.cs[m
+[1m+++ b/src/L.Bank.Accounts/Extensions/DependencyInjectionExtensions.cs[m
+[36m@@ -4,6 +4,8 @@[m [musing L.Bank.Accounts.Features.Accounts;[m
+ using L.Bank.Accounts.Identity;[m
+ using System.Reflection;[m
+ using System.Text.Json.Serialization;[m
+[32m+[m[32musing Hangfire;[m
+[32m+[m[32musing Hangfire.PostgreSql;[m
+ using L.Bank.Accounts.Common.Swagger;[m
+ using L.Bank.Accounts.Database;[m
+ using Microsoft.AspNetCore.Authentication.JwtBearer;[m
+[36m@@ -39,19 +41,28 @@[m [mpublic static class DependencyInjectionExtensions[m
+             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));[m
+         });[m
+ [m
+[31m-        builder.Services.AddSingleton<IAccountsRepository, AccountsRepository>();[m
+[32m+[m[32m        var connectionString = builder.Configuration.GetConnectionString("Postgres");[m
+[32m+[m[32m        builder.Services.AddDbContext<AccountsDbContext>(options =>[m
+[32m+[m[32m        {[m
+[32m+[m[32m            options.UseNpgsql(connectionString)[m
+[32m+[m[32m                .UseSnakeCaseNamingConvention();[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        builder.Services.AddScoped<IAccountsRepository, AccountsRepository>();[m
+         builder.Services.AddScoped<ICurrencyService, CurrencyService>();[m
+         builder.Services.AddScoped<IIdentityService, IdentityService>();[m
+ [m
+         builder.Services.AddValidatorsFromAssemblyContaining<Program>();[m
+         ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;[m
+ [m
+[31m-        builder.Services.AddDbContext<AccountsDbContext>(options =>[m
+[32m+[m[32m        builder.Services.AddHangfire(options =>[m
+         {[m
+[31m-            var connectionString = builder.Configuration.GetConnectionString("Postgres");[m
+[31m-            options.UseNpgsql(connectionString)[m
+[31m-                .UseSnakeCaseNamingConvention();[m
+[32m+[m[32m            options.UsePostgreSqlStorage(o =>[m
+[32m+[m[32m            {[m
+[32m+[m[32m                o.UseNpgsqlConnection(connectionString);[m
+[32m+[m[32m            });[m
+         });[m
+[32m+[m[32m        builder.Services.AddHangfireServer();[m
+ [m
+         builder.Services.AddMediatR(config =>[m
+         {[m
+[1mdiff --git a/src/L.Bank.Accounts/Features/Accounts/Account.cs b/src/L.Bank.Accounts/Features/Accounts/Account.cs[m
+[1mindex 6ae446e..0b436ed 100644[m
+[1m--- a/src/L.Bank.Accounts/Features/Accounts/Account.cs[m
+[1m+++ b/src/L.Bank.Accounts/Features/Accounts/Account.cs[m
+[36m@@ -44,7 +44,7 @@[m [mpublic sealed class Account[m
+     }[m
+ [m
+     public static MbResult<Account> New([m
+[31m-        Guid id, Guid ownerId, AccountTerms accountTerm, string currency, DateOnly? maturityDate, decimal sum = 0)[m
+[32m+[m[32m        Guid id, Guid ownerId, AccountTerms accountTerm, string currency, DateOnly? maturityDate = null, decimal sum = 0)[m
+     {[m
+         if (accountTerm.AccountType == AccountType.Deposit && maturityDate == null)[m
+             return MbResult.Fail<Account>("Для депозитного счета необходимо указать дату погашения.");[m
+[1mdiff --git a/src/L.Bank.Accounts/L.Bank.Accounts.csproj b/src/L.Bank.Accounts/L.Bank.Accounts.csproj[m
+[1mindex e0a05d2..80e7998 100644[m
+[1m--- a/src/L.Bank.Accounts/L.Bank.Accounts.csproj[m
+[1m+++ b/src/L.Bank.Accounts/L.Bank.Accounts.csproj[m
+[36m@@ -15,6 +15,9 @@[m
+     <PackageReference Include="EFCore.NamingConventions" Version="9.0.0" />[m
+     <PackageReference Include="FluentValidation" Version="12.0.0" />[m
+     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />[m
+[32m+[m[32m    <PackageReference Include="Hangfire" Version="1.8.20" />[m
+[32m+[m[32m    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.20" />[m
+[32m+[m[32m    <PackageReference Include="Hangfire.PostgreSql" Version="1.20.12" />[m
+     <PackageReference Include="JetBrains.Annotations" Version="2025.2.0" />[m
+     <PackageReference Include="Mapster" Version="7.4.0" />[m
+     <PackageReference Include="MediatR" Version="13.0.0" />[m
+[1mdiff --git a/src/L.Bank.Accounts/Migrations/20250810112349_ProceduresAdded.cs b/src/L.Bank.Accounts/Migrations/20250810112349_ProceduresAdded.cs[m
+[1mindex bc11ff6..466def5 100644[m
+[1m--- a/src/L.Bank.Accounts/Migrations/20250810112349_ProceduresAdded.cs[m
+[1m+++ b/src/L.Bank.Accounts/Migrations/20250810112349_ProceduresAdded.cs[m
+[36m@@ -22,6 +22,19 @@[m [mnamespace L.Bank.Accounts.Migrations[m
+                 END;[m
+                 $$[m
+             ");[m
+[32m+[m
+[32m+[m[32m            migrationBuilder.Sql(@"[m
+[32m+[m[32m                CREATE OR REPLACE PROCEDURE accrue_all_interests()[m
+[32m+[m[32m                LANGUAGE plpgsql[m
+[32m+[m[32m                AS $$[m
+[32m+[m[32m                BEGIN[m
+[32m+[m[32m                    UPDATE accounts[m
+[32m+[m[32m                    SET balance * (interest_rate / 100) * ((maturity_date - open_date) / 365),[m
+[32m+[m[32m                        close_date = CURRENT_DATE[m
+[32m+[m[32m                    WHERE CURRENT_DATE = maturity_date;[m
+[32m+[m[32m                END;[m
+[32m+[m[32m                $$[m
+[32m+[m[32m            ");[m
+         }[m
+ [m
+         /// <inheritdoc />[m

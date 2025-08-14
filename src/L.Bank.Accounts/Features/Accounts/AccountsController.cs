@@ -48,6 +48,7 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// <param name="dto">DTO объект, описывающая обновление счета</param>
     [HttpPatch("{accountId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<MbResult> UpdateAccount(Guid accountId, [FromBody] UpdateAccountDto dto)
     {
         var command = dto.MapToUpdateAccountCommand(accountId);
@@ -63,6 +64,7 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// <param name="interestRate">Процентная ставка</param>
     [HttpPut("{accountId:guid}/interest-rate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<MbResult> ChangeInterestRate(
         Guid accountId, [FromQuery, Required] Guid ownerId, [FromBody, Required] decimal interestRate)
     {
@@ -112,6 +114,7 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// <param name="dto">DTO объект, описывающий регистрируемую транзакцию</param>
     [HttpPost("{accountId:guid}/transactions")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<MbResult> CreateTransaction(Guid accountId, CreateTransactionDto dto)
     {
         var createTransactionCommand = dto.MapToCreateTransactionCommand(accountId);
@@ -125,6 +128,7 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// <param name="command">Объект команды, описывающий перевод между счетами</param>
     [HttpPost("transfer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<MbResult> Transfer(TransferCommand command)
     {
         return await mediator.Send(command);
@@ -146,7 +150,7 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// Сформировать выписку по нескольким счетам
     /// </summary>
     /// <param name="query">Объект запроса, описывающий операция формирования выписки по нескольким счетам</param>
-    [HttpGet("statement")]
+    [HttpPost("statement")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<MbResult<List<AccountStatementVm>>> GetManyAccountStatements(
         [FromBody] GetManyAccountStatementsQuery query)

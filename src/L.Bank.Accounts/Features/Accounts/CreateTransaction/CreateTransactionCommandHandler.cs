@@ -22,6 +22,8 @@ public sealed class CreateTransactionCommandHandler(
         var result = account.RegisterTransaction(
             command.Sum, command.TransactionType, command.CounterpartyAccountId, command.Description);
 
+        await accountsRepository.SaveChangesAsync();
+
         return result.IsFailure ? MbResult.Fail(result.Error!) : MbResult.Success();
     }
 }

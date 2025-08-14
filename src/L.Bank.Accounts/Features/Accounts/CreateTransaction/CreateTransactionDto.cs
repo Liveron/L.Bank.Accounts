@@ -6,6 +6,10 @@ namespace L.Bank.Accounts.Features.Accounts.CreateTransaction;
 public sealed record CreateTransactionDto
 {
     /// <summary>
+    /// ID владельца счета
+    /// </summary>
+    public required Guid OwnerId { get; init; }
+    /// <summary>
     /// Сумма транзакции
     /// </summary>
     /// <example>100</example>

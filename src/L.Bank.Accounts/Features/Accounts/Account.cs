@@ -11,11 +11,31 @@ public sealed class Account
     public string Currency { get; private set; }
     public decimal Balance { get; private set; }
 
-    private readonly List<Transaction> _transactions = [];
-    public IReadOnlyCollection<Transaction> Transactions => _transactions.AsReadOnly();
+    //private readonly List<Transaction> _transactions = [];
+    //public IReadOnlyCollection<Transaction> Transactions => _transactions.AsReadOnly();
+    public List<Transaction> Transactions { get; set; } = [];
     public DateOnly OpenDate { get; }
     public DateOnly? CloseDate { get; private set; }
     public DateOnly? MaturityDate { get; private set; }
+
+    // ReSharper disable once IdentifierTypo Небходимо для совместимости с БД
+    public uint Xmin { get; init; }
+
+
+    // ReSharper disable once ConvertToPrimaryConstructor Первичный конструктор менее читаем
+    public Account(Guid id, Guid ownerId, AccountType type, decimal interestRate, 
+        string currency, decimal balance, DateOnly openDate, DateOnly? closeDate, DateOnly? maturityDate)
+    {
+        Id = id; 
+        OwnerId = ownerId;
+        Type = type;
+        InterestRate = interestRate;
+        Currency = currency;
+        Balance = balance;
+        OpenDate = openDate;
+        CloseDate = closeDate;
+        MaturityDate = maturityDate;
+    }
 
     private Account(Guid id, Guid ownerId, AccountTerms accountTerm, string currency, DateOnly openDate, DateOnly? maturityDate)
     {
@@ -29,7 +49,7 @@ public sealed class Account
     }
 
     public static MbResult<Account> New(
-        Guid id, Guid ownerId, AccountTerms accountTerm, string currency, DateOnly? maturityDate, decimal sum = 0)
+        Guid id, Guid ownerId, AccountTerms accountTerm, string currency, DateOnly? maturityDate = null, decimal sum = 0)
     {
         if (accountTerm.AccountType == AccountType.Deposit && maturityDate == null)
             return MbResult.Fail<Account>("Для депозитного счета необходимо указать дату погашения.");
@@ -70,18 +90,6 @@ public sealed class Account
         return MbResult.Success();
     }
 
-    public MbResult Close()
-    {
-        if (CloseDate.HasValue)
-            return MbResult.Fail("Счет уже закрыт.");
-        if (Balance != 0)
-            return MbResult.Fail("Нельзя закрыть счет с ненулевым балансом.");
-
-        CloseDate = DateOnly.FromDateTime(DateTime.UtcNow);
-
-        return MbResult.Success();
-    }
-
     public decimal GetBalanceBefore(DateOnly date)
     {
         var transactions = Transactions.Where(a => DateOnly.FromDateTime(a.DateTime) < date);
@@ -104,7 +112,7 @@ public sealed class Account
 
         Balance -= sum;
 
-        var transaction = new Transaction(Guid.NewGuid(), Id, TransactionType.Debit, 
+        var transaction = new Transaction(Id, TransactionType.Debit, 
             sum, counterpartyAccountId, description);
         AddTransaction(transaction);
 
@@ -115,7 +123,7 @@ public sealed class Account
     {
         Balance += sum;
 
-        var transaction = new Transaction(Guid.NewGuid(), Id, TransactionType.Credit,
+        var transaction = new Transaction(Id, TransactionType.Credit,
             sum, counterpartyAccountId, description);
         AddTransaction(transaction);
     }
@@ -133,6 +141,6 @@ public sealed class Account
 
     private void AddTransaction(Transaction transaction)
     {
-        _transactions.Add(transaction);
+        Transactions.Add(transaction);
     }
 }
