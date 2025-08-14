@@ -24,6 +24,6 @@ public sealed class CreateTransactionCommandHandler(
 
         await accountsRepository.SaveChangesAsync();
 
-        return result.IsFailure ? MbResult.Fail(result.Error!) : MbResult.Success();
+        return result.IsFailure ? ResultFactory.Fail(result.Error!) : ResultFactory.Success();
     }
 }

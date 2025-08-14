@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using L.Bank.Accounts.Extensions;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace L.Bank.Accounts.Common.Swagger;
@@ -10,7 +11,7 @@ public sealed class MbResultOperationFilter : IOperationFilter
         var returnType = context.MethodInfo.ReturnType;
         Type? responseType = null;
 
-        if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>))
+        if (returnType.IsGenericTask())
             responseType = returnType.GetGenericArguments().First();
 
         if (responseType == null) 

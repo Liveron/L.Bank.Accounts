@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace L.Bank.Accounts.Database.EntityConfigurations;
+namespace L.Bank.Accounts.Features.Accounts.EntityConfigurations;
 
 public sealed class TransactionEntityTypeConfiguration : IEntityTypeConfiguration<Transaction>
 {

@@ -60,20 +60,13 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// Изменить процентную ставку счета
     /// </summary>
     /// <param name="accountId">ID счета</param>
-    /// <param name="ownerId">ID владельца счета</param>
-    /// <param name="interestRate">Процентная ставка</param>
+    /// <param name="dto">DTO объект изменения процентной ставки счета</param>
     [HttpPut("{accountId:guid}/interest-rate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<MbResult> ChangeInterestRate(
-        Guid accountId, [FromQuery, Required] Guid ownerId, [FromBody, Required] decimal interestRate)
+    public async Task<MbResult> ChangeInterestRate(Guid accountId, [FromBody] ChangeInterestRateDto dto)
     {
-        var command = new ChangeInterestRateCommand
-        {
-            AccountId = accountId,
-            InterestRate = interestRate,
-            OwnerId = ownerId
-        };
+        var command = dto.MapToChangeInterestRateCommand(accountId);
 
         return await mediator.Send(command);
     }
@@ -117,9 +110,9 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<MbResult> CreateTransaction(Guid accountId, CreateTransactionDto dto)
     {
-        var createTransactionCommand = dto.MapToCreateTransactionCommand(accountId);
+        var command = dto.MapToCreateTransactionCommand(accountId);
 
-        return await mediator.Send(createTransactionCommand);
+        return await mediator.Send(command);
     }
 
     /// <summary>

@@ -40,7 +40,7 @@ public sealed class GetManyAccountStatementsQueryHandler(
             statements.Add(statement);
         }
 
-        return MbResult.Success(statements);
+        return ResultFactory.Success(statements);
     }
 
     private async Task<MbResult<List<AccountStatementVm>>> GetAllAccountStatementsAsync(
@@ -57,6 +57,6 @@ public sealed class GetManyAccountStatementsQueryHandler(
             statements.Add(statement);
         }
 
-        return MbResult.Success(statements);
+        return ResultFactory.Success(statements);
     }
 }

@@ -24,6 +24,6 @@ public sealed class GetAccountStatementQueryHandler(
         var command = new CreateAccountStatementRequest(account, query.StartDate, query.EndDate);
         var statementVm = await mediator.Send(command, token);
 
-        return MbResult.Success(statementVm);
+        return ResultFactory.Success(statementVm);
     }
 }

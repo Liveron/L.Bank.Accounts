@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace L.Bank.Accounts.Features.Accounts;
+namespace L.Bank.Accounts.Features.Accounts.GetAllAccounts;
 
 public sealed record AccountVm
 {

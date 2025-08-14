@@ -13,6 +13,6 @@ public sealed class AccrueInterestCommandHandler(AccountsDbContext dbContext)
         var rowsAffected = await dbContext.Database.ExecuteSqlRawAsync(
             "CALL accrue_interest({0})", request.AccountId);
 
-        return rowsAffected > 0 ? MbResult.Success() : ResultFactory.FailAccountNotFound(request.AccountId);
+        return rowsAffected > 0 ? ResultFactory.Success() : ResultFactory.FailAccountNotFound(request.AccountId);
     }
 }

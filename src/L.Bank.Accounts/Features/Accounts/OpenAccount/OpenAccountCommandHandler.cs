@@ -22,11 +22,11 @@ public sealed class OpenAccountCommandHandler(
             Guid.NewGuid(), request.OwnerId, accountTerms, request.Currency, request.MaturityDate, request.Sum);
 
         if (accountCreationResult.IsFailure)
-            return MbResult.Fail<Guid>(accountCreationResult.Error!);
+            return ResultFactory.Fail<Guid>(accountCreationResult.Error!);
 
         var createdAccountId = accountsRepository.AddAccount(accountCreationResult.Value!);
         await accountsRepository.SaveChangesAsync();
 
-        return MbResult.Success(createdAccountId);
+        return ResultFactory.Success(createdAccountId);
     }
 }

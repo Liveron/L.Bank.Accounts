@@ -3,5 +3,6 @@ using MediatR;
 
 namespace L.Bank.Accounts.Features.Accounts.GetAccountStatement;
 
-public sealed record GetAccountStatementQuery(Guid AccountId, Guid OwnerId, DateOnly StartDate, DateOnly EndDate) 
+public sealed record GetAccountStatementQuery(
+    Guid AccountId, Guid OwnerId, DateOnly StartDate, DateOnly EndDate) 
     : IRequest<MbResult<AccountStatementVm>>;

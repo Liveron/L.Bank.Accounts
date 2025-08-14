@@ -31,13 +31,7 @@ public sealed class TransferCommandHandler(
 
         await accountsRepository.SaveChangesAsync();
 
-        var accountToDebitAfterTransfer = await accountsRepository.GetAccountAsync(
-            command.FromAccountId, command.FromAccountOwnerId);
-
-        var accountToCreditAfterTransfer = await accountsRepository.GetAccountAsync(
-            command.ToAccountId, command.ToAccountOwnerId);
-
-        var sumAfterTransfer = accountToDebitAfterTransfer!.Balance + accountToCreditAfterTransfer!.Balance;
+        var sumAfterTransfer = accountToDebit.Balance + accountToCredit.Balance;
 
         if (sumAfterTransfer != sumBeforeTransfer)
         {
@@ -46,6 +40,6 @@ public sealed class TransferCommandHandler(
         }
 
         await dbContext.CommitTransactionAsync(transaction!);
-        return MbResult.Success();
+        return ResultFactory.Success();
     }
 }

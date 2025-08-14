@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using L.Bank.Accounts.Extensions;
 using MediatR;
 
 namespace L.Bank.Accounts.Common.Behaviors;
@@ -17,7 +18,7 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
             return await next(cancellationToken);
 
         var responseType = typeof(TResponse);
-        if (!responseType.IsGenericType || responseType.GetGenericTypeDefinition() != typeof(MbResult<>))
+        if (responseType.IsMbResult())
             return (TResponse)MbResult.Fail(errors);
 
         var valueType = responseType.GetGenericArguments().First();

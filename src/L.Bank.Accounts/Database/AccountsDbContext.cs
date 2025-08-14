@@ -1,6 +1,6 @@
 ﻿using System.Data;
-using L.Bank.Accounts.Database.EntityConfigurations;
 using L.Bank.Accounts.Features.Accounts;
+using L.Bank.Accounts.Features.Accounts.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 

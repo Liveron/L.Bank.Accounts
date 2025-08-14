@@ -17,7 +17,7 @@ public sealed class GetAccountBalanceQueryHandler(
         var account = await accountsRepository.GetAccountAsync(query.AccountId, query.OwnerId);
 
         return account is not null 
-            ? MbResult.Success(account.Balance) 
+            ? ResultFactory.Success(account.Balance) 
             : ResultFactory.FailAccountNotFound<decimal>(query.AccountId);
     }
 }
