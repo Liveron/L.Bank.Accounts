@@ -1,4 +1,4 @@
-﻿namespace L.Bank.Accounts.Identity;
+﻿namespace L.Bank.Accounts.Infrastructure.Identity;
 
 public interface IIdentityService
 {

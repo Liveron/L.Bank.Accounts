@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace L.Bank.Accounts.Migrations
 {
     [DbContext(typeof(AccountsDbContext))]
-    [Migration("20250812044150_XminVersioning")]
-    partial class XminVersioning
+    [Migration("20250815165421_OutboxEventEntryAdded")]
+    partial class OutboxEventEntryAdded
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -127,6 +127,38 @@ namespace L.Bank.Accounts.Migrations
                         .HasDatabaseName("ix_transactions_account_id_date_time");
 
                     b.ToTable("transactions", (string)null);
+                });
+
+            modelBuilder.Entity("L.Bank.Accounts.Infrastructure.Database.Outbox.OutboxEventEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Event")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("event");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("event_type");
+
+                    b.Property<string>("OccuredAt")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("occured_at");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id")
+                        .HasName("pk_event_entries");
+
+                    b.ToTable("event_entries", (string)null);
                 });
 
             modelBuilder.Entity("L.Bank.Accounts.Features.Accounts.Transaction", b =>

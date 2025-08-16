@@ -1,7 +1,7 @@
 ﻿using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Common.Errors;
 
-namespace L.Bank.Accounts.Identity.Errors;
+namespace L.Bank.Accounts.Infrastructure.Identity.Errors;
 
 public record UserNotFoundError : NotFoundError
 {

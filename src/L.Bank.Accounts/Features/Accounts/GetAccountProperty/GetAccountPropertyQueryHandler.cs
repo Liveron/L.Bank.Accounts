@@ -1,8 +1,8 @@
 ﻿using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Extensions;
 using L.Bank.Accounts.Features.Accounts.Errors;
-using L.Bank.Accounts.Identity;
-using L.Bank.Accounts.Identity.Errors;
+using L.Bank.Accounts.Infrastructure.Identity;
+using L.Bank.Accounts.Infrastructure.Identity.Errors;
 
 namespace L.Bank.Accounts.Features.Accounts.GetAccountProperty;
 

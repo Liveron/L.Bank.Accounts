@@ -1,6 +1,6 @@
 ﻿using L.Bank.Accounts.Common;
-using L.Bank.Accounts.Database;
 using L.Bank.Accounts.Features.Accounts.Errors;
+using L.Bank.Accounts.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace L.Bank.Accounts.Features.Accounts.AccrueInterest;

@@ -1,6 +1,6 @@
 ﻿using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Features.Accounts.Errors;
-using L.Bank.Accounts.Identity;
+using L.Bank.Accounts.Infrastructure.Identity;
 
 namespace L.Bank.Accounts.Features.Accounts.ChangeInterestRate;
 

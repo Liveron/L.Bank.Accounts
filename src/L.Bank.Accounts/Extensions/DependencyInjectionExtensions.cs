@@ -1,17 +1,19 @@
 ﻿using FluentValidation;
 using L.Bank.Accounts.Common.Behaviors;
 using L.Bank.Accounts.Features.Accounts;
-using L.Bank.Accounts.Identity;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Hangfire;
 using Hangfire.PostgreSql;
 using L.Bank.Accounts.Common.Swagger;
-using L.Bank.Accounts.Database;
 using L.Bank.Accounts.Features.Accounts.AccrueAllInterests;
+using L.Bank.Accounts.Features.Accounts.IntegrationEvents;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using L.Bank.Accounts.Infrastructure.Database;
+using L.Bank.Accounts.Infrastructure.Identity;
 
 namespace L.Bank.Accounts.Extensions;
 
@@ -68,11 +70,13 @@ public static class DependencyInjectionExtensions
         });
         builder.Services.AddHangfireServer();
 
+        builder.Services.AddTransactionLevelHandlerMap();
         builder.Services.AddMediatR(config =>
         {
             config.RegisterServicesFromAssemblyContaining<Program>();
 
             config.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            config.AddOpenBehavior(typeof(TransactionBehavior<,>));
         });
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -97,6 +101,25 @@ public static class DependencyInjectionExtensions
                 policy.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader();
+            });
+        });
+
+        builder.Services.AddMassTransit(x =>
+        {
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host("localhost", "/", h => {
+                    h.Username("guest");
+                    h.Password("guest");
+                });
+
+                cfg.Message<AccountOpenedIntegrationEvent>(e =>
+                    e.SetEntityName("account.events"));
+
+                cfg.Publish<AccountOpenedIntegrationEvent>(e =>
+                    e.ExchangeType = "topic");
+
+                cfg.ConfigureEndpoints(context);
             });
         });
     }

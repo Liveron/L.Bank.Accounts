@@ -18,6 +18,8 @@ services:
     environment:
       - ConnectionStrings__Postgres=Host=postgres;Port=5432;Username=postgres;Password=postgres
     depends_on:
+      rabbitmq:
+        condition: service_healthy
       keycloak:
         condition: service_started
       postgres:
@@ -39,6 +41,23 @@ services:
       timeout: 10s
       retries: 3
 
+  rabbitmq:
+    image: rabbitmq:4.1.3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+      - rabbitmq-logs:/var/log/rabbitmq
+      - ./rabbitmq-definitions.json:/etc/rabbitmq/definitions.json
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   postgresql-data:
   postgresql-logs:
+  rabbitmq-data:
+  rabbitmq-logs:

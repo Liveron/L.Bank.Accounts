@@ -1,6 +1,6 @@
 ﻿using L.Bank.Accounts.Common;
-using L.Bank.Accounts.Identity;
-using L.Bank.Accounts.Identity.Errors;
+using L.Bank.Accounts.Infrastructure.Identity;
+using L.Bank.Accounts.Infrastructure.Identity.Errors;
 using Mapster;
 
 namespace L.Bank.Accounts.Features.Accounts.GetAllAccounts;

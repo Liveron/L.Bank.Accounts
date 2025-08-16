@@ -1,10 +1,11 @@
 ﻿using System.Data;
 using L.Bank.Accounts.Features.Accounts;
 using L.Bank.Accounts.Features.Accounts.EntityConfigurations;
+using L.Bank.Accounts.Infrastructure.Database.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace L.Bank.Accounts.Database;
+namespace L.Bank.Accounts.Infrastructure.Database;
 
 public sealed class AccountsDbContext(DbContextOptions<AccountsDbContext> options) : DbContext(options)
 {
@@ -12,6 +13,7 @@ public sealed class AccountsDbContext(DbContextOptions<AccountsDbContext> option
     public bool HasActiveTransaction => CurrentTransaction != null;
 
     public DbSet<Account> Accounts { get; set; }
+    public DbSet<OutboxEventEntry> EventEntries { get; set; }
 
     public async Task<IDbContextTransaction?> BeginTransactionAsync(
         IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)

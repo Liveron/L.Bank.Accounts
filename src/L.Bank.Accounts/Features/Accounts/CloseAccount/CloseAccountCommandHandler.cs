@@ -1,8 +1,8 @@
 ﻿using L.Bank.Accounts.Common;
-using L.Bank.Accounts.Database;
 using L.Bank.Accounts.Features.Accounts.AccrueInterest;
-using L.Bank.Accounts.Identity;
-using L.Bank.Accounts.Identity.Errors;
+using L.Bank.Accounts.Infrastructure.Database;
+using L.Bank.Accounts.Infrastructure.Identity;
+using L.Bank.Accounts.Infrastructure.Identity.Errors;
 using MediatR;
 
 namespace L.Bank.Accounts.Features.Accounts.CloseAccount;
@@ -16,13 +16,7 @@ public sealed class CloseAccountCommandHandler(
         if (!await identityService.IdentifyUserAsync(command.OwnerId))
             return ResultFactory.FailUserNotFound(command.OwnerId);
 
-        await using var transaction = await dbContext.BeginTransactionAsync();
-
         var accrueInterestCommand = new AccrueInterestCommand(command.AccountId);
-        var result = await mediator.Send(accrueInterestCommand, cancellationToken);
-
-        await transaction!.CommitAsync(cancellationToken);
-
-        return result;
+        return await mediator.Send(accrueInterestCommand, cancellationToken);
     }
 }
