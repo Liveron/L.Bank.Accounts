@@ -148,6 +148,11 @@ public sealed class Account
         Frozen = true;
     }
 
+    public void Unblock()
+    {
+        Frozen = false;
+    }
+
     private void AddTransaction(Transaction transaction)
     {
         Transactions.Add(transaction);

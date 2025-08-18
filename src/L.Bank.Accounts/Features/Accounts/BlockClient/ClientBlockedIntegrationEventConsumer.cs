@@ -19,12 +19,6 @@ namespace L.Bank.Accounts.Features.Accounts.BlockClient;
 public sealed class ClientBlockedIntegrationEventConsumer(IMediator mediator) 
     : IConsumer<IntegrationEventEnvelope<ClientBlockedIntegrationEvent>>
 {
-    public async Task Consume(ConsumeContext<ClientBlockedIntegrationEvent> context)
-    {
-        var command = context.Message.Adapt<BlockClientCommand>();
-        await mediator.Send(command);
-    }
-    
     public async Task Consume(ConsumeContext<IntegrationEventEnvelope<ClientBlockedIntegrationEvent>> context)
     {
         var command = context.Message.Payload.Adapt<BlockClientCommand>();

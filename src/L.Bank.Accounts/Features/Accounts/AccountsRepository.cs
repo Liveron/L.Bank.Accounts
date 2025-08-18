@@ -34,7 +34,6 @@ public sealed class AccountsRepository(AccountsDbContext dbContext) : IAccountsR
                 .ToListAsync();
 
         return await dbContext.Accounts.Include(a => a.Transactions)
-            .AsNoTracking()
             .Where(a => a.OwnerId == userId)
             .ToListAsync();
     }

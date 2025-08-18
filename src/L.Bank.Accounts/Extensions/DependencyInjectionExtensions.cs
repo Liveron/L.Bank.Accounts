@@ -9,12 +9,14 @@ using L.Bank.Accounts.Common.Swagger;
 using L.Bank.Accounts.Features.Accounts.AccrueAllInterests;
 using L.Bank.Accounts.Features.Accounts.BlockClient;
 using L.Bank.Accounts.Features.Accounts.IntegrationEvents;
+using L.Bank.Accounts.Features.Accounts.UnblockClient;
 using L.Bank.Accounts.Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using L.Bank.Accounts.Infrastructure.Database;
+using L.Bank.Accounts.Infrastructure.Database.Outbox;
 using L.Bank.Accounts.Infrastructure.Identity;
 using L.Bank.Accounts.Infrastructure.MassTransit;
 using MassTransit.Transports.Fabric;
@@ -58,6 +60,7 @@ public static class DependencyInjectionExtensions
 
         builder.Services.AddMigrations<AccountsDbContext>();
 
+        builder.Services.AddScoped<IOutboxProcessor, OutboxProcessor>();
         builder.Services.AddScoped<IAccrueAllInterestsJob, AccrueAllInterestsJob>();
         builder.Services.AddScoped<IAccountsRepository, AccountsRepository>();
         builder.Services.AddScoped<ICurrencyService, CurrencyService>();
@@ -122,11 +125,17 @@ public static class DependencyInjectionExtensions
 
                 cfg.UseRawJsonSerializer();
 
+                cfg.Message<IntegrationEventEnvelope<ClientUnblockedIntegrationEvent>>(e =>
+                    e.SetEntityName("account.events"));
+
+                cfg.Publish<IntegrationEventEnvelope<ClientUnblockedIntegrationEvent>>(e =>
+                    e.ExchangeType = ExchangeType.Topic);
+
                 cfg.Message<IntegrationEventEnvelope<AccountOpenedIntegrationEvent>>(e =>
                     e.SetEntityName("account.events"));
 
                 cfg.Publish<IntegrationEventEnvelope<AccountOpenedIntegrationEvent>>(e =>
-                    e.ExchangeType = "topic");
+                    e.ExchangeType = ExchangeType.Topic);
 
                 cfg.Message<IntegrationEventEnvelope<ClientBlockedIntegrationEvent>>(e =>
                     e.SetEntityName("account.events"));

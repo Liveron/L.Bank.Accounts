@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using L.Bank.Accounts.Common.Middlewares;
 using L.Bank.Accounts.Features.Accounts.AccrueAllInterests;
+using L.Bank.Accounts.Infrastructure.Database.Outbox;
 
 namespace L.Bank.Accounts.Extensions;
 
@@ -25,5 +26,9 @@ public static class ApplicationExtensions
         app.Services.GetRequiredService<IRecurringJobManager>()
             .AddOrUpdate<IAccrueAllInterestsJob>(
                 "accrue-all-interests", job => job.ExecuteAsync(), Cron.Daily);
+
+        app.Services.GetRequiredService<IRecurringJobManager>()
+            .AddOrUpdate<IOutboxProcessor>(
+                "outbox-processor", processor => processor.ExecuteAsync(), "*/10 * * * * *");
     }
 }

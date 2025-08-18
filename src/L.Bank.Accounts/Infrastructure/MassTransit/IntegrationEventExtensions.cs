@@ -5,7 +5,7 @@ namespace L.Bank.Accounts.Infrastructure.MassTransit;
 public static class IntegrationEventExtensions
 {
     public static Task PublishIntegrationEvent<TIntegrationEvent>(
-        this IPublishEndpoint endpoint, TIntegrationEvent @event)
+        this IPublishEndpoint endpoint, TIntegrationEvent @event, CancellationToken token = default)
         where TIntegrationEvent : IntegrationEvent
     {
         var integrationEvent = new IntegrationEventEnvelope<TIntegrationEvent>(
@@ -14,6 +14,9 @@ public static class IntegrationEventExtensions
             source: "account-service",
             correlationId: Guid.NewGuid());
 
-        return endpoint.Publish(integrationEvent, context => context.SetRoutingKey(@event.RoutingKey));
+        return endpoint.Publish(integrationEvent, context =>
+        {
+            context.SetRoutingKey(@event.RoutingKey);
+        }, cancellationToken: token);
     }
 }

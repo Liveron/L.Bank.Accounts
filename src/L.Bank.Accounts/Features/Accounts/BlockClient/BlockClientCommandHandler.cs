@@ -19,6 +19,7 @@ public sealed class BlockClientCommandHandler(
         foreach (var account in accounts)
             account.Block();
 
+        await accountsRepository.SaveChangesAsync();
         return ResultFactory.Success();
     }
 }

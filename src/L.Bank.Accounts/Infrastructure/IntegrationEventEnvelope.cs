@@ -1,10 +1,19 @@
-﻿namespace L.Bank.Accounts.Infrastructure;
+﻿using System.Text.Json.Serialization;
+
+namespace L.Bank.Accounts.Infrastructure;
 
 public sealed record IntegrationEventEnvelope<TIntegrationEvent>
     where TIntegrationEvent : IntegrationEvent
 {
     public TIntegrationEvent Payload { get; private init; }
     public IntegrationEventEnvelopeMetadata Meta { get; private init; }
+
+    [JsonConstructor]
+    public IntegrationEventEnvelope(TIntegrationEvent payload, IntegrationEventEnvelopeMetadata meta)
+    {
+        Payload = payload;
+        Meta = meta;
+    }
 
     public IntegrationEventEnvelope(
         TIntegrationEvent @event, string version , string source, Guid correlationId, Guid causationId = default)

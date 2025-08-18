@@ -16,6 +16,7 @@ using MediatR;
 using L.Bank.Accounts.Features.Accounts.CreateTransaction;
 using L.Bank.Accounts.Features.Accounts.GetAccountProperty;
 using L.Bank.Accounts.Features.Accounts.UpdateAccount;
+using L.Bank.Accounts.Infrastructure.MassTransit;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 
@@ -208,7 +209,7 @@ public sealed class AccountsController(IMediator mediator, IPublishEndpoint endp
     public async Task<MbResult> CloseClient([FromBody] Guid clientId)
     {
         var integrationEvent = new ClientBlockedIntegrationEvent(clientId);
-        await endpoint.Publish(integrationEvent, context => context.SetRoutingKey("account.client.closed"));
+        await endpoint.PublishIntegrationEvent(integrationEvent);
         return MbResult.Success();
     }
 }
