@@ -17,6 +17,7 @@ public sealed class Account
     public DateOnly OpenDate { get; }
     public DateOnly? CloseDate { get; private set; }
     public DateOnly? MaturityDate { get; private set; }
+    public bool Frozen { get; private set; }
 
     // ReSharper disable once IdentifierTypo Небходимо для совместимости с БД
     public uint Xmin { get; init; }
@@ -107,6 +108,9 @@ public sealed class Account
 
     public MbResult Debit(decimal sum, Guid? counterpartyAccountId, string? description)
     {
+        if (Frozen)
+            return MbResult.Fail("Нельзя снимать деньги с заблокированного счета.");
+
         if (sum > Balance)
             return MbResult.Fail("На балансе недостаточно денег.");
 
@@ -137,6 +141,11 @@ public sealed class Account
         Credit(sum, counterpartyAccountId, description);
 
         return MbResult.Success();
+    }
+
+    public void Block()
+    {
+        Frozen = true;
     }
 
     private void AddTransaction(Transaction transaction)

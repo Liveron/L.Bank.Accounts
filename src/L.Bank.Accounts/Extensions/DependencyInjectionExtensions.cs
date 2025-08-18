@@ -7,13 +7,18 @@ using Hangfire;
 using Hangfire.PostgreSql;
 using L.Bank.Accounts.Common.Swagger;
 using L.Bank.Accounts.Features.Accounts.AccrueAllInterests;
+using L.Bank.Accounts.Features.Accounts.BlockClient;
 using L.Bank.Accounts.Features.Accounts.IntegrationEvents;
+using L.Bank.Accounts.Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using L.Bank.Accounts.Infrastructure.Database;
 using L.Bank.Accounts.Infrastructure.Identity;
+using L.Bank.Accounts.Infrastructure.MassTransit;
+using MassTransit.Transports.Fabric;
+using ExchangeType = RabbitMQ.Client.ExchangeType;
 
 namespace L.Bank.Accounts.Extensions;
 
@@ -106,18 +111,40 @@ public static class DependencyInjectionExtensions
 
         builder.Services.AddMassTransit(x =>
         {
+            x.AddConsumer<ClientBlockedIntegrationEventConsumer>();
+
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("localhost", "/", h => {
+                cfg.Host("rabbitmq", "/", h => {
                     h.Username("guest");
                     h.Password("guest");
                 });
 
-                cfg.Message<AccountOpenedIntegrationEvent>(e =>
+                cfg.UseRawJsonSerializer();
+
+                cfg.Message<IntegrationEventEnvelope<AccountOpenedIntegrationEvent>>(e =>
                     e.SetEntityName("account.events"));
 
-                cfg.Publish<AccountOpenedIntegrationEvent>(e =>
+                cfg.Publish<IntegrationEventEnvelope<AccountOpenedIntegrationEvent>>(e =>
                     e.ExchangeType = "topic");
+
+                cfg.Message<IntegrationEventEnvelope<ClientBlockedIntegrationEvent>>(e =>
+                    e.SetEntityName("account.events"));
+
+                cfg.Publish<IntegrationEventEnvelope<ClientBlockedIntegrationEvent>>(e =>
+                    e.ExchangeType = ExchangeType.Topic);
+
+                cfg.ReceiveEndpoint("account.antifraud", c =>
+                {
+                    c.ConfigureConsumeTopology = false;
+
+                    //c.Bind("account.antifraud", s =>
+                    //{
+                    //    s.ExchangeType = ExchangeType.Topic;
+                    //});
+
+                    c.ConfigureConsumer<ClientBlockedIntegrationEventConsumer>(context);
+                });
 
                 cfg.ConfigureEndpoints(context);
             });

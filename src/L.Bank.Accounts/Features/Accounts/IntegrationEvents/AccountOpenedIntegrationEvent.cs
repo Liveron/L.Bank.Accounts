@@ -4,8 +4,18 @@ namespace L.Bank.Accounts.Features.Accounts.IntegrationEvents;
 
 public sealed record AccountOpenedIntegrationEvent : IntegrationEvent
 {
-    public required Guid AccountId { get; init; }
-    public required Guid OwnerId { get; init; }
-    public required string Currency { get; init; }
-    public required AccountType Type { get; init; }
+    public Guid AccountId { get; private init; }
+    public Guid OwnerId { get; private init; }
+    public string Currency { get; private init; }
+    public AccountType Type { get; private init; }
+
+    public AccountOpenedIntegrationEvent(
+        Guid accountId, Guid ownerId, string currency, AccountType type) 
+        : base("account.opened")
+    {
+        AccountId = accountId;
+        OwnerId = ownerId;
+        Currency = currency;
+        Type = type;
+    }
 }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace L.Bank.Accounts.Migrations
 {
     [DbContext(typeof(AccountsDbContext))]
-    [Migration("20250815165421_OutboxEventEntryAdded")]
-    partial class OutboxEventEntryAdded
+    [Migration("20250818114057_ProceduresAdded")]
+    partial class ProceduresAdded
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,6 +45,10 @@ namespace L.Bank.Accounts.Migrations
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
                         .HasColumnName("currency");
+
+                    b.Property<bool>("Frozen")
+                        .HasColumnType("boolean")
+                        .HasColumnName("frozen");
 
                     b.Property<decimal>("InterestRate")
                         .HasColumnType("numeric")
@@ -146,9 +150,8 @@ namespace L.Bank.Accounts.Migrations
                         .HasColumnType("text")
                         .HasColumnName("event_type");
 
-                    b.Property<string>("OccuredAt")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<DateTime>("OccuredAt")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("occured_at");
 
                     b.Property<int>("Status")

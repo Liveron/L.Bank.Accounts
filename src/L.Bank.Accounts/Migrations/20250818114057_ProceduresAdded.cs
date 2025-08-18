@@ -41,6 +41,7 @@ namespace L.Bank.Accounts.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql("DROP PROCEDURE IF EXISTS accrue_interest(UUID)");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS accrue_all_interests()");
         }
     }
 }

@@ -43,6 +43,10 @@ namespace L.Bank.Accounts.Migrations
                         .HasColumnType("character varying(3)")
                         .HasColumnName("currency");
 
+                    b.Property<bool>("Frozen")
+                        .HasColumnType("boolean")
+                        .HasColumnName("frozen");
+
                     b.Property<decimal>("InterestRate")
                         .HasColumnType("numeric")
                         .HasColumnName("interest_rate");
@@ -143,9 +147,8 @@ namespace L.Bank.Accounts.Migrations
                         .HasColumnType("text")
                         .HasColumnName("event_type");
 
-                    b.Property<string>("OccuredAt")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<DateTime>("OccuredAt")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("occured_at");
 
                     b.Property<int>("Status")

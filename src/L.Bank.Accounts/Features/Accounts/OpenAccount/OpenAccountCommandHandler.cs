@@ -4,15 +4,17 @@ using L.Bank.Accounts.Features.Accounts.IntegrationEvents;
 using L.Bank.Accounts.Infrastructure.Database.Outbox;
 using L.Bank.Accounts.Infrastructure.Identity;
 using L.Bank.Accounts.Infrastructure.Identity.Errors;
+using L.Bank.Accounts.Infrastructure.MassTransit;
+using MassTransit;
 
 namespace L.Bank.Accounts.Features.Accounts.OpenAccount;
 
 public sealed class OpenAccountCommandHandler(
     ICurrencyService currencyService, IAccountsRepository accountsRepository, 
-    IIdentityService identityService, IOutboxService outboxService) 
+    IIdentityService identityService, IPublishEndpoint endpoint) 
     : RequestHandler<OpenAccountCommand, MbResult<Guid>>
 {
-    public override async Task<MbResult<Guid>> Handle(OpenAccountCommand request, CancellationToken _)
+    public override async Task<MbResult<Guid>> Handle(OpenAccountCommand request, CancellationToken cancellationToken)
     {
         if (!await identityService.IdentifyUserAsync(request.OwnerId))
             return ResultFactory.FailUserNotFound<Guid>(request.OwnerId);
@@ -30,14 +32,10 @@ public sealed class OpenAccountCommandHandler(
         var createdAccount = accountsRepository.AddAccount(accountCreationResult.Value!);
         await accountsRepository.SaveChangesAsync();
 
-        var integrationEvent = new AccountOpenedIntegrationEvent
-        {
-            AccountId = createdAccount.Id,
-            Currency = createdAccount.Currency,
-            OwnerId = createdAccount.OwnerId,
-            Type = createdAccount.Type
-        };
-        await outboxService.SaveEventAsync(integrationEvent);
+        var integrationEvent = new AccountOpenedIntegrationEvent(
+            createdAccount.Id, createdAccount.OwnerId, createdAccount.Currency, createdAccount.Type);
+        //await outboxService.SaveEventAsync(integrationEvent);
+        await endpoint.PublishIntegrationEvent(integrationEvent);
 
         return ResultFactory.Success(createdAccount.Id);
     }
