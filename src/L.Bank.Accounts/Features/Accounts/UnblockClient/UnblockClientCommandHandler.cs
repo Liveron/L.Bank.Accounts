@@ -1,7 +1,6 @@
 ﻿using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Infrastructure.Identity;
 using L.Bank.Accounts.Infrastructure.Identity.Errors;
-using MediatR;
 
 namespace L.Bank.Accounts.Features.Accounts.UnblockClient;
 

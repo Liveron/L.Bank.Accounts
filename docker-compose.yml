@@ -17,6 +17,7 @@ services:
       dockerfile: src/L.Bank.Accounts/Dockerfile
     environment:
       - ConnectionStrings__Postgres=Host=postgres;Port=5432;Username=postgres;Password=postgres
+      - ConnectionStrings__RabbitMQ=amqp://guest:guest@rabbitmq:5672 
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -49,6 +50,7 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
       - rabbitmq-logs:/var/log/rabbitmq
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
       - ./rabbitmq-definitions.json:/etc/rabbitmq/definitions.json
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "status"]

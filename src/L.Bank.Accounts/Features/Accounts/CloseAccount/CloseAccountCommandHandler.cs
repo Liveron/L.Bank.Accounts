@@ -1,6 +1,5 @@
 ﻿using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Features.Accounts.AccrueInterest;
-using L.Bank.Accounts.Infrastructure.Database;
 using L.Bank.Accounts.Infrastructure.Identity;
 using L.Bank.Accounts.Infrastructure.Identity.Errors;
 using MediatR;

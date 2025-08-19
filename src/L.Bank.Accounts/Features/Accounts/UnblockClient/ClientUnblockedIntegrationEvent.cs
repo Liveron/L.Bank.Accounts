@@ -3,7 +3,8 @@ using L.Bank.Accounts.Infrastructure;
 
 namespace L.Bank.Accounts.Features.Accounts.UnblockClient;
 
-public sealed record ClientUnblockedIntegrationEvent(Guid ClientId) : IntegrationEvent
+public sealed record ClientUnblockedIntegrationEvent(Guid ClientId) 
+    : IntegrationEvent("account.client.unblocked")
 {
     /// <summary>
     /// Id блокируемого клиента.

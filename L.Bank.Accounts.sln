@@ -12,14 +12,15 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{754FC069-D67B-A9D7-50A1-8D1CA196D8F1}"
 	ProjectSection(SolutionItems) = preProject
 		rabbitmq-definitions.json = rabbitmq-definitions.json
+		rabbitmq.conf = rabbitmq.conf
 		realm-export.json = realm-export.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5BB32044-A125-4CB0-A4EB-FFBE3A1D1FFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L.Bank.Accounts.UnitTests", "..\L.Bank.Accounts.UnitTests\L.Bank.Accounts.UnitTests.csproj", "{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L.Bank.Accounts.UnitTests", "tests\L.Bank.Accounts.UnitTests\L.Bank.Accounts.UnitTests.csproj", "{1C8DF442-BB68-44EC-BDE1-CD16D5DD66EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L.Bank.Accounts.IntegrationTests", "..\L.Bank.Accounts.IntegrationTests\L.Bank.Accounts.IntegrationTests.csproj", "{A7402EFE-3975-4E59-AA1C-55E86121A782}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "L.Bank.Accounts.IntegrationTests", "tests\L.Bank.Accounts.IntegrationTests\L.Bank.Accounts.IntegrationTests.csproj", "{A7402EFE-3975-4E59-AA1C-55E86121A782}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
