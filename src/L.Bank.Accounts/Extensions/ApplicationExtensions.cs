@@ -2,6 +2,7 @@
 using L.Bank.Accounts.Common.Middlewares;
 using L.Bank.Accounts.Features.Accounts.AccrueAllInterests;
 using L.Bank.Accounts.Infrastructure.Database.Outbox;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace L.Bank.Accounts.Extensions;
 
@@ -19,6 +20,19 @@ public static class ApplicationExtensions
     public static void UseMbResultAuthorization(this WebApplication app)
     {
         app.UseMiddleware<MbResultUnauthorizedMiddleware>();
+    }
+
+    public static void MapHealthChecks(this WebApplication app)
+    {
+        app.MapHealthChecks("/health/live", new HealthCheckOptions
+        {
+            Predicate = check => check.Tags.Contains("live")
+        });
+
+        app.MapHealthChecks("/health/ready", new HealthCheckOptions
+        {
+            Predicate = check => check.Tags.Contains("ready")
+        });
     }
 
     public static void UseBackgroundJobs(this WebApplication app)

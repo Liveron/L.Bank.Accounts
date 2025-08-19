@@ -25,13 +25,13 @@ public sealed record CreateTransactionDto
     /// ID контрагента
     /// </summary>
     [UsedImplicitly]
-    public required Guid? CounterpartyAccountId { get; init; }
+    public Guid? CounterpartyAccountId { get; init; }
     /// <summary>
     /// Описание транзакции
     /// </summary>
     /// <example>Описание</example>
     [UsedImplicitly]
-    public required string? Description { get; init; }
+    public string? Description { get; init; }
 }
 
 public static class MappingExtensions

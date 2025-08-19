@@ -7,8 +7,7 @@ using MediatR;
 
 namespace L.Bank.Accounts.Features.Accounts.CloseAccount;
 
-public sealed class CloseAccountCommandHandler(
-    AccountsDbContext dbContext, IIdentityService identityService, IMediator mediator) 
+public sealed class CloseAccountCommandHandler(IIdentityService identityService, IMediator mediator) 
     : RequestHandler<CloseAccountCommand, MbResult>
 {
     public override async Task<MbResult> Handle(CloseAccountCommand command, CancellationToken cancellationToken)

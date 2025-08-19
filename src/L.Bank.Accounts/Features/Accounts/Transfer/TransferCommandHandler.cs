@@ -3,6 +3,7 @@ using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Common.Attributes;
 using L.Bank.Accounts.Features.Accounts.Errors;
 using L.Bank.Accounts.Infrastructure.Database;
+using L.Bank.Accounts.Infrastructure.Database.Outbox;
 
 namespace L.Bank.Accounts.Features.Accounts.Transfer;
 

@@ -11,7 +11,7 @@ namespace L.Bank.Accounts.Features.Accounts.OpenAccount;
 
 public sealed class OpenAccountCommandHandler(
     ICurrencyService currencyService, IAccountsRepository accountsRepository, 
-    IIdentityService identityService, IPublishEndpoint endpoint) 
+    IIdentityService identityService, IOutboxService outbox) 
     : RequestHandler<OpenAccountCommand, MbResult<Guid>>
 {
     public override async Task<MbResult<Guid>> Handle(OpenAccountCommand request, CancellationToken cancellationToken)
@@ -34,8 +34,7 @@ public sealed class OpenAccountCommandHandler(
 
         var integrationEvent = new AccountOpenedIntegrationEvent(
             createdAccount.Id, createdAccount.OwnerId, createdAccount.Currency, createdAccount.Type);
-        //await outboxService.SaveEventAsync(integrationEvent);
-        await endpoint.PublishIntegrationEvent(integrationEvent);
+        await outbox.SaveEventAsync(integrationEvent);
 
         return ResultFactory.Success(createdAccount.Id);
     }

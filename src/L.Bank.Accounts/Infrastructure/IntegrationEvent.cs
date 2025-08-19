@@ -1,19 +1,14 @@
-﻿namespace L.Bank.Accounts.Infrastructure;
+﻿using JetBrains.Annotations;
 
-public record IntegrationEvent
+namespace L.Bank.Accounts.Infrastructure;
+
+public abstract record IntegrationEvent(Guid EventId, string OccuredAt, string? RoutingKey = null)
 {
-    public Guid EventId { get; private init; }
-    public string OccuredAt { get; private init; } 
-    public string? RoutingKey { get; private init; }
+    public Guid EventId { get; private init; } = EventId;
+    [UsedImplicitly] public string OccuredAt { get; private init; } = OccuredAt;
+    public string? RoutingKey { get; private init; } = RoutingKey;
 
-    public IntegrationEvent(string? routingKey = null) 
+    protected IntegrationEvent(string? routingKey = null) 
         : this(Guid.NewGuid(), DateTime.UtcNow.ToString("O"), routingKey)
     { }
-
-    public IntegrationEvent(Guid eventId, string occuredAt, string? routingKey = null)
-    {
-        EventId = eventId;
-        OccuredAt = occuredAt;
-        RoutingKey = routingKey;
-    }
 }

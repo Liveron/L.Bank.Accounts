@@ -1,21 +1,13 @@
-﻿using L.Bank.Accounts.Infrastructure;
+﻿using JetBrains.Annotations;
+using L.Bank.Accounts.Infrastructure;
 
 namespace L.Bank.Accounts.Features.Accounts.IntegrationEvents;
 
-public sealed record AccountOpenedIntegrationEvent : IntegrationEvent
+public sealed record AccountOpenedIntegrationEvent(Guid AccountId, Guid OwnerId, string Currency, AccountType Type)
+    : IntegrationEvent("account.opened")
 {
-    public Guid AccountId { get; private init; }
-    public Guid OwnerId { get; private init; }
-    public string Currency { get; private init; }
-    public AccountType Type { get; private init; }
-
-    public AccountOpenedIntegrationEvent(
-        Guid accountId, Guid ownerId, string currency, AccountType type) 
-        : base("account.opened")
-    {
-        AccountId = accountId;
-        OwnerId = ownerId;
-        Currency = currency;
-        Type = type;
-    }
+    public Guid AccountId { get; private init; } = AccountId;
+    public Guid OwnerId { get; private init; } = OwnerId;
+    [UsedImplicitly] public string Currency { get; private init; } = Currency;
+    public AccountType Type { get; private init; } = Type;
 }

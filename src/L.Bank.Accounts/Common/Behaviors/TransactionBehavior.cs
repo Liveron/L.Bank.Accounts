@@ -5,8 +5,7 @@ using MediatR;
 namespace L.Bank.Accounts.Common.Behaviors;
 
 public sealed class TransactionBehavior<TRequest, TResponse>(
-    ITransactionLevelHandlerMap transactionLevelHandlerMap, AccountsDbContext dbContext,
-    ILogger<TransactionBehavior<TRequest, TResponse>> logger)
+    ITransactionLevelHandlerMap transactionLevelHandlerMap, AccountsDbContext dbContext)
     : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {
     public async Task<TResponse> Handle(

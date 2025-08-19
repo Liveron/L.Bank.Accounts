@@ -3,6 +3,7 @@ using System;
 using L.Bank.Accounts.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace L.Bank.Accounts.Migrations
 {
     [DbContext(typeof(AccountsDbContext))]
-    partial class AccountsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250818222703_Pend")]
+    partial class Pend
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -145,38 +148,6 @@ namespace L.Bank.Accounts.Migrations
                         .HasName("pk_inbox_consumed");
 
                     b.ToTable("inbox_consumed", (string)null);
-                });
-
-            modelBuilder.Entity("L.Bank.Accounts.Infrastructure.Database.Inbox.InboxDeadEventEntry", b =>
-                {
-                    b.Property<Guid>("MessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("message_id");
-
-                    b.Property<string>("Error")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("error");
-
-                    b.Property<string>("Handler")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("handler");
-
-                    b.Property<string>("Payload")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("payload");
-
-                    b.Property<DateTime>("ReceivedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("received_at");
-
-                    b.HasKey("MessageId")
-                        .HasName("pk_inbox_dead_event_entries");
-
-                    b.ToTable("InboxDeadEventEntries", "inbox_dead_letters");
                 });
 
             modelBuilder.Entity("L.Bank.Accounts.Infrastructure.Database.Outbox.OutboxEventEntry", b =>

@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using JetBrains.Annotations;
 
 namespace L.Bank.Accounts.Features.Accounts.GetAccountProperty;
 
+[UsedImplicitly]
 public sealed class GetAccountPropertyQueryValidator : AbstractValidator<GetAccountPropertyQuery>
 {
     public GetAccountPropertyQueryValidator()

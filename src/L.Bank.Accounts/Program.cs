@@ -10,7 +10,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseBackgroundJobs();
+if (!app.Environment.IsTesting())
+    app.UseBackgroundJobs();
 
 app.UseCors();
 
@@ -21,6 +22,7 @@ app.UseAuthorization();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerOpenApi();
+    app.MapHealthChecks();
 }
 
 app.MapControllers();

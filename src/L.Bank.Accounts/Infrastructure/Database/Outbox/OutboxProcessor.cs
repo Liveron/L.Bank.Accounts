@@ -8,7 +8,9 @@ public interface IOutboxProcessor
     Task ExecuteAsync();
 }
 
-public class OutboxProcessor(IPublishEndpoint publishEndpoint, IOutboxService outbox) : IOutboxProcessor
+public class OutboxProcessor(
+    IPublishEndpoint publishEndpoint, IOutboxService outbox, ILogger<OutboxProcessor> logger) 
+    : IOutboxProcessor
 {
     public async Task ExecuteAsync()
     {
@@ -16,9 +18,16 @@ public class OutboxProcessor(IPublishEndpoint publishEndpoint, IOutboxService ou
 
         foreach (var @event in notPublishedEvents)
         {
-            using var source = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            await publishEndpoint.PublishIntegrationEvent(@event.IntegrationEvent!, source.Token);
-            await outbox.MarkEventAsPublishedAsync(@event.Id);
+            var integrationEvent = @event.IntegrationEvent;
+            try
+            {
+                await publishEndpoint.PublishIntegrationEvent(integrationEvent!);
+                await outbox.MarkEventAsPublishedAsync(@event.Id);
+            }
+            catch (TimeoutException)
+            {
+                logger.LogError("Integration event was not published. Event={IntegrationEvent}", integrationEvent);
+            }
         }
     }
 }

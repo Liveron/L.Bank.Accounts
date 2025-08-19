@@ -17,7 +17,7 @@ public sealed class OutboxService(AccountsDbContext dbContext) : IOutboxService
         dbContext.EventEntries.Add(new OutboxEventEntry
         {
             Event = JsonSerializer.Serialize(@event),
-            EventType = @event.GetType().AssemblyQualifiedName!,
+            EventType = @event.GetType().AssemblyQualifiedName!
         });
 
         await dbContext.SaveChangesAsync();

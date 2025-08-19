@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using L.Bank.Accounts.Features.Accounts;
 using L.Bank.Accounts.Features.Accounts.EntityConfigurations;
+using L.Bank.Accounts.Infrastructure.Database.Inbox;
 using L.Bank.Accounts.Infrastructure.Database.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -14,6 +15,8 @@ public sealed class AccountsDbContext(DbContextOptions<AccountsDbContext> option
 
     public DbSet<Account> Accounts { get; set; }
     public DbSet<OutboxEventEntry> EventEntries { get; set; }
+    public DbSet<InboxConsumeEventEntry> InboxConsumeEventEntries { get; set; }
+    public DbSet<InboxDeadEventEntry> InboxDeadEventEntries { get; set; }
 
     public async Task<IDbContextTransaction?> BeginTransactionAsync(
         IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
@@ -71,5 +74,7 @@ public sealed class AccountsDbContext(DbContextOptions<AccountsDbContext> option
     {
         modelBuilder.ApplyConfiguration(new AccountEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new TransactionEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new InboxConsumeEventEntryEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new InboxDeadEventEntryEntityTypeConfiguration());
     }
 }

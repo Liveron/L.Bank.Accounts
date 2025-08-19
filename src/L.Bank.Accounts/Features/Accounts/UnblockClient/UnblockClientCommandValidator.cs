@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using JetBrains.Annotations;
 
 namespace L.Bank.Accounts.Features.Accounts.UnblockClient;
 
+[UsedImplicitly]
 public sealed class UnblockClientCommandValidator : AbstractValidator<UnblockClientCommand>
 {
     public UnblockClientCommandValidator()

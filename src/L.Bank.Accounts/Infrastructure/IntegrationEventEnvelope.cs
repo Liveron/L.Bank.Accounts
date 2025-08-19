@@ -35,4 +35,4 @@ public sealed record IntegrationEventEnvelopeMetadata
     public string Source { get; init; } = "account-service";
     public Guid CorrelationId { get; init; }
     public Guid CausationId { get; init; }
-};
+}

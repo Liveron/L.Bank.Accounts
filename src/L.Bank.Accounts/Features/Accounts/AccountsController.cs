@@ -70,7 +70,6 @@ public sealed class AccountsController(IMediator mediator, IPublishEndpoint endp
     public async Task<MbResult> ChangeInterestRate(Guid accountId, [FromBody] ChangeInterestRateDto dto)
     {
         var command = dto.MapToChangeInterestRateCommand(accountId);
-
         return await mediator.Send(command);
     }
 
