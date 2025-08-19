@@ -1,4 +1,5 @@
 ﻿using L.Bank.Accounts.Common.Exceptions;
+using L.Bank.Accounts.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -36,13 +37,12 @@ public class MbResultExceptionFilter : ExceptionFilterAttribute
 
     private static bool IsMbResultTask(Type returnType)
     {
-        if (!returnType.IsGenericType || returnType.GetGenericTypeDefinition() != typeof(Task<>))
+        if (!returnType.IsGenericTask())
             return false;
 
         var taskArgument = returnType.GetGenericArguments().First();
 
-        return taskArgument == typeof(MbResult) ||
-               (taskArgument.IsGenericType && taskArgument.GetGenericTypeDefinition() == typeof(MbResult<>));
+        return taskArgument.IsMbResult() || taskArgument.IsGenericMbResult();
     }
 
     private static (int statusCode, string errorMessage) GetErrorDetails(Exception exception)
@@ -60,7 +60,7 @@ public class MbResultExceptionFilter : ExceptionFilterAttribute
 
 
         // ReSharper disable once InvertIf Предлагает менее читаемый код
-        if (taskArgument.IsGenericType && taskArgument.GetGenericTypeDefinition() == typeof(MbResult<>))
+        if (taskArgument.IsGenericMbResult())
         {
             var genericArgument = returnType.GetGenericArguments().First();
             return MbResult.Fail(genericArgument, errorMessage);

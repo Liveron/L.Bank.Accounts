@@ -1,18 +1,19 @@
 ﻿using System.Data;
 using L.Bank.Accounts.Common;
-using L.Bank.Accounts.Database;
+using L.Bank.Accounts.Common.Attributes;
 using L.Bank.Accounts.Features.Accounts.Errors;
+using L.Bank.Accounts.Infrastructure.Database;
+using L.Bank.Accounts.Infrastructure.Database.Outbox;
 
 namespace L.Bank.Accounts.Features.Accounts.Transfer;
 
+[Transaction(IsolationLevel.Serializable)]
 public sealed class TransferCommandHandler(
     IAccountsRepository accountsRepository, AccountsDbContext dbContext) 
     : RequestHandler<TransferCommand, MbResult>
 {
     public override async Task<MbResult> Handle(TransferCommand command, CancellationToken _)
     {
-        await using var transaction = await dbContext.BeginTransactionAsync(IsolationLevel.Serializable);
-
         var accountToDebit = await accountsRepository.GetAccountAsync(command.FromAccountId, command.FromAccountOwnerId);
         if (accountToDebit is null)
             return ResultFactory.FailAccountNotFound(command.FromAccountId);
@@ -31,21 +32,12 @@ public sealed class TransferCommandHandler(
 
         await accountsRepository.SaveChangesAsync();
 
-        var accountToDebitAfterTransfer = await accountsRepository.GetAccountAsync(
-            command.FromAccountId, command.FromAccountOwnerId);
+        var sumAfterTransfer = accountToDebit.Balance + accountToCredit.Balance;
 
-        var accountToCreditAfterTransfer = await accountsRepository.GetAccountAsync(
-            command.ToAccountId, command.ToAccountOwnerId);
+        if (sumAfterTransfer == sumBeforeTransfer) 
+            return ResultFactory.Success();
 
-        var sumAfterTransfer = accountToDebitAfterTransfer!.Balance + accountToCreditAfterTransfer!.Balance;
-
-        if (sumAfterTransfer != sumBeforeTransfer)
-        {
-            dbContext.RollbackTransaction();
-            return ResultFactory.FailTransferSumNotCorrect(sumBeforeTransfer, sumAfterTransfer);
-        }
-
-        await dbContext.CommitTransactionAsync(transaction!);
-        return MbResult.Success();
+        dbContext.RollbackTransaction();
+        return ResultFactory.FailTransferSumNotCorrect(sumBeforeTransfer, sumAfterTransfer);
     }
 }

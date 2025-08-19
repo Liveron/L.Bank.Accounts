@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Common.Filters;
+using L.Bank.Accounts.Features.Accounts.BlockClient;
 using L.Bank.Accounts.Features.Accounts.ChangeInterestRate;
 using L.Bank.Accounts.Features.Accounts.CheckAccountExists;
 using L.Bank.Accounts.Features.Accounts.CloseAccount;
@@ -15,6 +16,8 @@ using MediatR;
 using L.Bank.Accounts.Features.Accounts.CreateTransaction;
 using L.Bank.Accounts.Features.Accounts.GetAccountProperty;
 using L.Bank.Accounts.Features.Accounts.UpdateAccount;
+using L.Bank.Accounts.Infrastructure.MassTransit;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 
 namespace L.Bank.Accounts.Features.Accounts;
@@ -28,7 +31,7 @@ namespace L.Bank.Accounts.Features.Accounts;
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-public sealed class AccountsController(IMediator mediator) : ControllerBase
+public sealed class AccountsController(IMediator mediator, IPublishEndpoint endpoint) : ControllerBase
 {
     /// <summary>
     /// Создать счет
@@ -60,21 +63,13 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     /// Изменить процентную ставку счета
     /// </summary>
     /// <param name="accountId">ID счета</param>
-    /// <param name="ownerId">ID владельца счета</param>
-    /// <param name="interestRate">Процентная ставка</param>
+    /// <param name="dto">DTO объект изменения процентной ставки счета</param>
     [HttpPut("{accountId:guid}/interest-rate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<MbResult> ChangeInterestRate(
-        Guid accountId, [FromQuery, Required] Guid ownerId, [FromBody, Required] decimal interestRate)
+    public async Task<MbResult> ChangeInterestRate(Guid accountId, [FromBody] ChangeInterestRateDto dto)
     {
-        var command = new ChangeInterestRateCommand
-        {
-            AccountId = accountId,
-            InterestRate = interestRate,
-            OwnerId = ownerId
-        };
-
+        var command = dto.MapToChangeInterestRateCommand(accountId);
         return await mediator.Send(command);
     }
 
@@ -117,9 +112,9 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<MbResult> CreateTransaction(Guid accountId, CreateTransactionDto dto)
     {
-        var createTransactionCommand = dto.MapToCreateTransactionCommand(accountId);
+        var command = dto.MapToCreateTransactionCommand(accountId);
 
-        return await mediator.Send(createTransactionCommand);
+        return await mediator.Send(command);
     }
 
     /// <summary>
@@ -206,5 +201,14 @@ public sealed class AccountsController(IMediator mediator) : ControllerBase
         };
 
         return await mediator.Send(query);
+    }
+
+    [HttpPost("close")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<MbResult> CloseClient([FromBody] Guid clientId)
+    {
+        var integrationEvent = new ClientBlockedIntegrationEvent(clientId);
+        await endpoint.PublishIntegrationEvent(integrationEvent);
+        return MbResult.Success();
     }
 }

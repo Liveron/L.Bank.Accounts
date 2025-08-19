@@ -1,7 +1,7 @@
 ﻿using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Features.Accounts.Errors;
-using L.Bank.Accounts.Identity;
-using L.Bank.Accounts.Identity.Errors;
+using L.Bank.Accounts.Infrastructure.Identity;
+using L.Bank.Accounts.Infrastructure.Identity.Errors;
 
 namespace L.Bank.Accounts.Features.Accounts.GetAccountBalance;
 
@@ -17,7 +17,7 @@ public sealed class GetAccountBalanceQueryHandler(
         var account = await accountsRepository.GetAccountAsync(query.AccountId, query.OwnerId);
 
         return account is not null 
-            ? MbResult.Success(account.Balance) 
+            ? ResultFactory.Success(account.Balance) 
             : ResultFactory.FailAccountNotFound<decimal>(query.AccountId);
     }
 }

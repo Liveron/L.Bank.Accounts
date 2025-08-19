@@ -1,15 +1,20 @@
 ﻿using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Features.Accounts.Errors;
-using L.Bank.Accounts.Identity;
-using L.Bank.Accounts.Identity.Errors;
+using L.Bank.Accounts.Features.Accounts.IntegrationEvents;
+using L.Bank.Accounts.Infrastructure.Database.Outbox;
+using L.Bank.Accounts.Infrastructure.Identity;
+using L.Bank.Accounts.Infrastructure.Identity.Errors;
+using L.Bank.Accounts.Infrastructure.MassTransit;
+using MassTransit;
 
 namespace L.Bank.Accounts.Features.Accounts.OpenAccount;
 
 public sealed class OpenAccountCommandHandler(
-    ICurrencyService currencyService, IAccountsRepository accountsRepository, IIdentityService identityService) 
+    ICurrencyService currencyService, IAccountsRepository accountsRepository, 
+    IIdentityService identityService, IOutboxService outbox) 
     : RequestHandler<OpenAccountCommand, MbResult<Guid>>
 {
-    public override async Task<MbResult<Guid>> Handle(OpenAccountCommand request, CancellationToken _)
+    public override async Task<MbResult<Guid>> Handle(OpenAccountCommand request, CancellationToken cancellationToken)
     {
         if (!await identityService.IdentifyUserAsync(request.OwnerId))
             return ResultFactory.FailUserNotFound<Guid>(request.OwnerId);
@@ -22,11 +27,15 @@ public sealed class OpenAccountCommandHandler(
             Guid.NewGuid(), request.OwnerId, accountTerms, request.Currency, request.MaturityDate, request.Sum);
 
         if (accountCreationResult.IsFailure)
-            return MbResult.Fail<Guid>(accountCreationResult.Error!);
+            return ResultFactory.Fail<Guid>(accountCreationResult.Error!);
 
-        var createdAccountId = accountsRepository.AddAccount(accountCreationResult.Value!);
+        var createdAccount = accountsRepository.AddAccount(accountCreationResult.Value!);
         await accountsRepository.SaveChangesAsync();
 
-        return MbResult.Success(createdAccountId);
+        var integrationEvent = new AccountOpenedIntegrationEvent(
+            createdAccount.Id, createdAccount.OwnerId, createdAccount.Currency, createdAccount.Type);
+        await outbox.SaveEventAsync(integrationEvent);
+
+        return ResultFactory.Success(createdAccount.Id);
     }
 }

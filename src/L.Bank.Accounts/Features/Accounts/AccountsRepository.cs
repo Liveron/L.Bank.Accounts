@@ -1,5 +1,5 @@
 ﻿using L.Bank.Accounts.Common.Exceptions;
-using L.Bank.Accounts.Database;
+using L.Bank.Accounts.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -7,7 +7,7 @@ namespace L.Bank.Accounts.Features.Accounts;
 
 public interface IAccountsRepository
 {
-    public Guid AddAccount(Account account);
+    public Account AddAccount(Account account);
     public Task<Account?> GetAccountAsync(Guid accountId, Guid ownerId);
     public Task<List<Account>> GetAllAccountsAsync(Guid? userId);
     public Task SaveChangesAsync();
@@ -15,10 +15,9 @@ public interface IAccountsRepository
 
 public sealed class AccountsRepository(AccountsDbContext dbContext) : IAccountsRepository
 {
-    public Guid AddAccount(Account account)
+    public Account AddAccount(Account account)
     {
-        dbContext.Accounts.Add(account);
-        return account.Id;
+        return dbContext.Accounts.Add(account).Entity;
     }
 
     public async Task<Account?> GetAccountAsync(Guid accountId, Guid ownerId)
@@ -35,7 +34,6 @@ public sealed class AccountsRepository(AccountsDbContext dbContext) : IAccountsR
                 .ToListAsync();
 
         return await dbContext.Accounts.Include(a => a.Transactions)
-            .AsNoTracking()
             .Where(a => a.OwnerId == userId)
             .ToListAsync();
     }

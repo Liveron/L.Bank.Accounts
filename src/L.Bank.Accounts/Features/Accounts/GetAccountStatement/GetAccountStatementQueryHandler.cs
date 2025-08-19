@@ -1,8 +1,8 @@
 ﻿using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Features.Accounts.Errors;
 using L.Bank.Accounts.Features.Accounts.Requests.CreateAccountStatement;
-using L.Bank.Accounts.Identity;
-using L.Bank.Accounts.Identity.Errors;
+using L.Bank.Accounts.Infrastructure.Identity;
+using L.Bank.Accounts.Infrastructure.Identity.Errors;
 using MediatR;
 
 namespace L.Bank.Accounts.Features.Accounts.GetAccountStatement;
@@ -24,6 +24,6 @@ public sealed class GetAccountStatementQueryHandler(
         var command = new CreateAccountStatementRequest(account, query.StartDate, query.EndDate);
         var statementVm = await mediator.Send(command, token);
 
-        return MbResult.Success(statementVm);
+        return ResultFactory.Success(statementVm);
     }
 }

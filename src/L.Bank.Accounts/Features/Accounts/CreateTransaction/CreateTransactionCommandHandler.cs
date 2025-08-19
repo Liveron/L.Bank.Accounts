@@ -1,11 +1,15 @@
 ﻿using L.Bank.Accounts.Common;
+using L.Bank.Accounts.Common.Errors;
 using L.Bank.Accounts.Features.Accounts.Errors;
-using L.Bank.Accounts.Identity;
-using L.Bank.Accounts.Identity.Errors;
+using L.Bank.Accounts.Features.Accounts.IntegrationEvents;
+using L.Bank.Accounts.Infrastructure;
+using L.Bank.Accounts.Infrastructure.Database.Outbox;
+using L.Bank.Accounts.Infrastructure.Identity;
+using L.Bank.Accounts.Infrastructure.Identity.Errors;
 
 namespace L.Bank.Accounts.Features.Accounts.CreateTransaction;
 
-public sealed class CreateTransactionCommandHandler(
+public sealed class CreateTransactionCommandHandler(IOutboxService outbox,
     IAccountsRepository accountsRepository, IIdentityService identityService) 
     : RequestHandler<CreateTransactionCommand, MbResult>
 {
@@ -24,6 +28,16 @@ public sealed class CreateTransactionCommandHandler(
 
         await accountsRepository.SaveChangesAsync();
 
-        return result.IsFailure ? MbResult.Fail(result.Error!) : MbResult.Success();
+        if (!result.IsSuccess) 
+            return ResultFactory.FailConflict(result.Error!.Messages.First());
+
+        IntegrationEvent @event = command.TransactionType == TransactionType.Credit
+            ? new MoneyCreditedIntegrationEvent(
+                command.AccountId, command.Sum, account.Currency, Guid.NewGuid())
+            : new MoneyDebitedIntegrationEvent(
+                command.AccountId, command.Sum, account.Currency, Guid.NewGuid(), command.Description);
+        await outbox.SaveEventAsync(@event);
+
+        return ResultFactory.Success();
     }
 }

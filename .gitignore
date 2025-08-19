@@ -365,3 +365,4 @@ FodyWeavers.xsd\
 nuget.config
 
 .env
+/src/L.Bank.Accounts/Infrastructure/MassTransit/EnvelopePublishFilter.cs

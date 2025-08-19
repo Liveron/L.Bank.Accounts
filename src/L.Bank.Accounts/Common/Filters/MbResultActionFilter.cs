@@ -29,6 +29,7 @@ public class MbResultActionFilter : ActionFilterAttribute
                 MbResult { IsFailure: true } mbResultError => mbResultError.Error switch
                 {
                     NotFoundError => new NotFoundObjectResult(mbResultError),
+                    ConflictError => new ConflictObjectResult(mbResultError),
                     _ => new BadRequestObjectResult(mbResultError)
                 },
                 _ => context.Result

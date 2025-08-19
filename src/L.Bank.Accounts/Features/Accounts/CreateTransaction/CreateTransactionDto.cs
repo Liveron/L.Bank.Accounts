@@ -25,13 +25,13 @@ public sealed record CreateTransactionDto
     /// ID контрагента
     /// </summary>
     [UsedImplicitly]
-    public required Guid? CounterpartyAccountId { get; init; }
+    public Guid? CounterpartyAccountId { get; init; }
     /// <summary>
     /// Описание транзакции
     /// </summary>
     /// <example>Описание</example>
     [UsedImplicitly]
-    public required string? Description { get; init; }
+    public string? Description { get; init; }
 }
 
 public static class MappingExtensions
@@ -42,7 +42,8 @@ public static class MappingExtensions
             .Map(command => command.AccountId, _ => (Guid)MapContext.Current!.Parameters["AccountId"]);
     }
 
-    public static CreateTransactionCommand MapToCreateTransactionCommand(this CreateTransactionDto dto, Guid accountId)
+    public static CreateTransactionCommand MapToCreateTransactionCommand(
+        this CreateTransactionDto dto, Guid accountId)
     {
         return dto.BuildAdapter()
             .AddParameters("AccountId", accountId)
