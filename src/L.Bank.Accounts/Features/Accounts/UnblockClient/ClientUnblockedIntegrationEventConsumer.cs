@@ -6,7 +6,7 @@ using MediatR;
 namespace L.Bank.Accounts.Features.Accounts.UnblockClient;
 
 public sealed class ClientUnblockedIntegrationEventConsumer(IMediator mediator)
-    : IEnvelopeConsumer<ClientUnblockedIntegrationEvent>
+    : IConsumer<IntegrationEventEnvelope<ClientUnblockedIntegrationEvent>>
 {
     public async Task Consume(ConsumeContext<IntegrationEventEnvelope<ClientUnblockedIntegrationEvent>> context)
     {

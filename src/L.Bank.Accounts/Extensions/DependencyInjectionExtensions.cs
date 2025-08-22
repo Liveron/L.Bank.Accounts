@@ -133,6 +133,7 @@ public static class DependencyInjectionExtensions
         builder.Services.AddMassTransit(x =>
         {
             x.AddConsumer<ClientBlockedIntegrationEventConsumer>();
+            x.AddConsumer<ClientUnblockedIntegrationEventConsumer>();
 
             x.UsingRabbitMq((context, cfg) =>
                 {
@@ -190,9 +191,9 @@ public static class DependencyInjectionExtensions
                     //    s.ExchangeType = ExchangeType.Topic;
                     //});
 
-                    c.ConfigureConsumer<ClientUnblockedIntegrationEventConsumer>(context);
-
                     c.ConfigureConsumer<ClientBlockedIntegrationEventConsumer>(context);
+
+                    c.ConfigureConsumer<ClientUnblockedIntegrationEventConsumer>(context);
                 });
 
                 cfg.ConfigureEndpoints(context);

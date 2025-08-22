@@ -4,8 +4,6 @@ using L.Bank.Accounts.Features.Accounts.IntegrationEvents;
 using L.Bank.Accounts.Infrastructure.Database.Outbox;
 using L.Bank.Accounts.Infrastructure.Identity;
 using L.Bank.Accounts.Infrastructure.Identity.Errors;
-using L.Bank.Accounts.Infrastructure.MassTransit;
-using MassTransit;
 
 namespace L.Bank.Accounts.Features.Accounts.OpenAccount;
 
