@@ -1,7 +1,8 @@
 ﻿using Hangfire;
+using L.Bank.Accounts.Application;
 using L.Bank.Accounts.Common.Middlewares;
 using L.Bank.Accounts.Features.Accounts.AccrueAllInterests;
-using L.Bank.Accounts.Infrastructure.Database.Outbox;
+using L.Bank.Accounts.Infrastructure.Integration;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace L.Bank.Accounts.Extensions;
@@ -42,7 +43,7 @@ public static class ApplicationExtensions
                 "accrue-all-interests", job => job.ExecuteAsync(), Cron.Daily);
 
         app.Services.GetRequiredService<IRecurringJobManager>()
-            .AddOrUpdate<IOutboxProcessor>(
-                "outbox-processor", processor => processor.ExecuteAsync(), "*/10 * * * * *");
+            .AddOrUpdate<IIntegrationService<IntegrationEvent>>(
+                "outbox-processor", service => service.PublishEventsAsync(), "*/10 * * * * *");
     }
 }

@@ -1,10 +1,10 @@
 ﻿using JetBrains.Annotations;
-using L.Bank.Accounts.Infrastructure;
+using L.Bank.Accounts.Infrastructure.Integration;
 
 namespace L.Bank.Accounts.Features.Accounts.UnblockClient;
 
 public sealed record ClientUnblockedIntegrationEvent(Guid ClientId) 
-    : IntegrationEvent("account.client.unblocked")
+    : IntegrationEvent
 {
     /// <summary>
     /// Id блокируемого клиента.

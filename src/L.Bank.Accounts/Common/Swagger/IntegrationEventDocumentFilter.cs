@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using L.Bank.Accounts.Infrastructure;
+using L.Bank.Accounts.Infrastructure.Integration;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 

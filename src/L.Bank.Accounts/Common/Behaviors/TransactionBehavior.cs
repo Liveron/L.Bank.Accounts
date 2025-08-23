@@ -11,11 +11,10 @@ public sealed class TransactionBehavior<TRequest, TResponse>(
     public async Task<TResponse> Handle(
         TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        var isolationLevel = transactionLevelHandlerMap.GetTransactionLevel(request.GetType());
-            
         if (dbContext.HasActiveTransaction)
             return await next(cancellationToken);
 
+        var isolationLevel = transactionLevelHandlerMap.GetTransactionLevel(request.GetType());
         await using var transaction = await dbContext.BeginTransactionAsync(isolationLevel);
 
         var result = await next(cancellationToken);

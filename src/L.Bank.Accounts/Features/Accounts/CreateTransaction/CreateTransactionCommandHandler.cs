@@ -2,10 +2,10 @@
 using L.Bank.Accounts.Common.Errors;
 using L.Bank.Accounts.Features.Accounts.Errors;
 using L.Bank.Accounts.Features.Accounts.IntegrationEvents;
-using L.Bank.Accounts.Infrastructure;
-using L.Bank.Accounts.Infrastructure.Database.Outbox;
 using L.Bank.Accounts.Infrastructure.Identity;
 using L.Bank.Accounts.Infrastructure.Identity.Errors;
+using L.Bank.Accounts.Infrastructure.Integration;
+using L.Bank.Accounts.Infrastructure.Integration.Outbox;
 
 namespace L.Bank.Accounts.Features.Accounts.CreateTransaction;
 

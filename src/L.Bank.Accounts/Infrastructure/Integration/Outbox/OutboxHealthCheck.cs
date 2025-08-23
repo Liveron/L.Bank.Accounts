@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace L.Bank.Accounts.Infrastructure.Database.Outbox;
+namespace L.Bank.Accounts.Infrastructure.Integration.Outbox;
 
 public sealed class OutboxHealthCheck(IOutboxService outbox) : IHealthCheck
 {
@@ -9,7 +9,7 @@ public sealed class OutboxHealthCheck(IOutboxService outbox) : IHealthCheck
     public async Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context, CancellationToken cancellationToken = new())
     {
-        var notPublishedEvents = await outbox.GetNotPublishedEvents();
+        var notPublishedEvents = await outbox.GetNotPublishedEventsAsync();
 
         if (notPublishedEvents.Count() > WarningThreshold)
         {

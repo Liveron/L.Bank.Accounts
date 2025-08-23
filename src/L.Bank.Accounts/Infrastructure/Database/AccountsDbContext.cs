@@ -2,7 +2,7 @@
 using L.Bank.Accounts.Features.Accounts;
 using L.Bank.Accounts.Features.Accounts.EntityConfigurations;
 using L.Bank.Accounts.Infrastructure.Database.Inbox;
-using L.Bank.Accounts.Infrastructure.Database.Outbox;
+using L.Bank.Accounts.Infrastructure.Integration.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 

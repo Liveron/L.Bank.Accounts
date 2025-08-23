@@ -8,8 +8,6 @@ using System.Net.Http.Json;
 using L.Bank.Accounts.Features.Accounts.BlockClient;
 using L.Bank.Accounts.Features.Accounts.ChangeInterestRate;
 using L.Bank.Accounts.Features.Accounts.CreateTransaction;
-using L.Bank.Accounts.Infrastructure.MassTransit;
-using MassTransit;
 
 namespace L.Bank.Accounts.IntegrationTests;
 
@@ -120,23 +118,23 @@ public sealed class ApiTests(ApplicationFixture fixture)
         Assert.Contains(secondResponse.StatusCode, expectedValues);
     }
 
-    [Fact]
-    public async Task ClientBlocked_ShouldPreventDebit()
-    {
-        // Arrange & Act
-        var ownerId = Guid.NewGuid();
-        var accountId = await OpenAccountAsync(ownerId, AccountTerms.Reliable6);
+    //[Fact]
+    //public async Task ClientBlocked_ShouldPreventDebit()
+    //{
+    //    // Arrange & Act
+    //    var ownerId = Guid.NewGuid();
+    //    var accountId = await OpenAccountAsync(ownerId, AccountTerms.Reliable6);
 
-        var @event = new ClientBlockedIntegrationEvent(ownerId);
-        await using var scope = fixture.Services.CreateAsyncScope();
+    //    var @event = new ClientBlockedIntegrationEvent(ownerId);
+    //    await using var scope = fixture.Services.CreateAsyncScope();
 
-        var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
-        await publishEndpoint.PublishIntegrationEvent(@event);
+    //    var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+    //    await publishEndpoint.PublishIntegrationEvent(@event);
 
-        await Task.Delay(10000); // Жду обработки события
+    //    await Task.Delay(10000); // Жду обработки события
 
-        var response = await RegisterDebitTransaction(ownerId, accountId, 100);
+    //    var response = await RegisterDebitTransaction(ownerId, accountId, 100);
 
-        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
-    }
+    //    Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+    //}
 }

@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using L.Bank.Accounts.Infrastructure.Integration;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 
-namespace L.Bank.Accounts.Infrastructure.Database.Outbox;
+namespace L.Bank.Accounts.Infrastructure.Integration.Outbox;
 
 public sealed record OutboxEventEntry
 {
@@ -12,7 +13,6 @@ public sealed record OutboxEventEntry
     public OutboxEventEntryStatus Status { get; set; } = OutboxEventEntryStatus.NotPublished;
     [NotMapped]
     public IntegrationEvent? IntegrationEvent { get; private set; }
-
     public OutboxEventEntry DeserializeJsonEvent(Type type)
     {
         IntegrationEvent = JsonSerializer.Deserialize(Event, type) as IntegrationEvent;

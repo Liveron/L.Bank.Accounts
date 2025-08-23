@@ -1,11 +1,11 @@
 ﻿using JetBrains.Annotations;
-using L.Bank.Accounts.Infrastructure;
+using L.Bank.Accounts.Infrastructure.Integration;
 
 namespace L.Bank.Accounts.Features.Accounts.IntegrationEvents;
 
 public sealed record MoneyCreditedIntegrationEvent(
     Guid AccountId, decimal Amount, string Currency, Guid OperationId)
-    : IntegrationEvent("account.money.credited")
+    : IntegrationEvent
 {
     /// <summary>
     /// Id счета, на который зачислены деньги.
