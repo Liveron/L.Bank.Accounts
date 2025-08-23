@@ -1,4 +1,4 @@
-﻿namespace L.Bank.Accounts.Infrastructure.Database.Outbox;
+﻿namespace L.Bank.Accounts.Infrastructure.Integration.Outbox;
 
 public enum OutboxEventEntryStatus
 {

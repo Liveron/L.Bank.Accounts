@@ -6,23 +6,19 @@ using System.Text.Json.Serialization;
 using Hangfire;
 using Hangfire.PostgreSql;
 using L.Bank.Accounts.Common.Swagger;
+using L.Bank.Accounts.Extensions.DependencyInjection;
 using L.Bank.Accounts.Features.Accounts.AccrueAllInterests;
-using L.Bank.Accounts.Features.Accounts.BlockClient;
-using L.Bank.Accounts.Features.Accounts.IntegrationEvents;
-using L.Bank.Accounts.Features.Accounts.UnblockClient;
-using L.Bank.Accounts.Infrastructure;
-using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using L.Bank.Accounts.Infrastructure.Database;
-using L.Bank.Accounts.Infrastructure.Database.Outbox;
 using L.Bank.Accounts.Infrastructure.Identity;
-using L.Bank.Accounts.Infrastructure.MassTransit;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using RabbitMQ.Client;
 using Serilog;
-using ExchangeType = RabbitMQ.Client.ExchangeType;
+using L.Bank.Accounts.Infrastructure.Integration.Outbox;
+using L.Bank.Accounts.Application;
+using L.Bank.Accounts.Infrastructure.Integration;
 
 namespace L.Bank.Accounts.Extensions;
 
@@ -64,23 +60,17 @@ public static class DependencyInjectionExtensions
         builder.Services.AddMigrations<AccountsDbContext>();
 
         builder.Services.AddScoped<IOutboxService, OutboxService>();
-        builder.Services.AddScoped<IOutboxProcessor, OutboxProcessor>();
+        builder.Services.AddScoped<IIntegrationService<IntegrationEvent>, IntegrationService>();
         builder.Services.AddScoped<IAccrueAllInterestsJob, AccrueAllInterestsJob>();
         builder.Services.AddScoped<IAccountsRepository, AccountsRepository>();
         builder.Services.AddScoped<ICurrencyService, CurrencyService>();
         builder.Services.AddScoped<IIdentityService, IdentityService>();
 
-        var rabbitMqConnectionString = builder.Configuration.GetConnectionString("RabbitMQ");
-        builder.Services.AddHealthChecks()
-            .AddRabbitMQ(async _ =>
-            {
+        builder.Services.AddRabbitMq(builder.Configuration);
 
-                var factory = new ConnectionFactory
-                {
-                    Uri = new Uri(rabbitMqConnectionString!)
-                };
-                return await factory.CreateConnectionAsync();
-            }, name: "rabbitmq-check", tags: ["ready"])
+        builder.Services.AddHealthChecks()
+            .AddRabbitMQ(services => services.GetRequiredService<IConnection>(), 
+                name: "rabbitmq-check", tags: ["ready"])
             .AddCheck("live", () => HealthCheckResult.Healthy(), ["live"])
             .AddCheck<OutboxHealthCheck>("outbox-check", tags: ["ready"]);
 
@@ -127,76 +117,6 @@ public static class DependencyInjectionExtensions
                 policy.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader();
-            });
-        });
-
-        builder.Services.AddMassTransit(x =>
-        {
-            x.AddConsumer<ClientBlockedIntegrationEventConsumer>();
-            x.AddConsumer<ClientUnblockedIntegrationEventConsumer>();
-
-            x.UsingRabbitMq((context, cfg) =>
-                {
-                //    cfg.Host("localhost", "/", h => {
-                //        h.Username("guest");
-                //        h.Password("guest");
-                //    });
-
-                cfg.Host(rabbitMqConnectionString);
-
-                cfg.UseRawJsonSerializer();
-
-                cfg.UseConsumeFilter(typeof(LogConsumeFilter<>), context);
-                cfg.UseConsumeFilter(typeof(ValidationEnvelopeFilter<>), context);
-                cfg.UseConsumeFilter(typeof(IdempotencyFilter<>), context);
-
-                cfg.UsePublishFilter(typeof(LogPublishFilter<>), context);
-
-                cfg.Message<IntegrationEventEnvelope<ClientUnblockedIntegrationEvent>>(e =>
-                   e.SetEntityName("account.events"));
-
-                cfg.Publish<IntegrationEventEnvelope<ClientUnblockedIntegrationEvent>>(e =>
-                    e.ExchangeType = ExchangeType.Topic);
-
-                cfg.Message<IntegrationEventEnvelope<MoneyCreditedIntegrationEvent>>(e =>
-                    e.SetEntityName("account.events"));
-                
-                cfg.Publish<IntegrationEventEnvelope<MoneyCreditedIntegrationEvent>>(e =>
-                    e.ExchangeType = ExchangeType.Topic);
-
-                cfg.Message<IntegrationEventEnvelope<MoneyDebitedIntegrationEvent>>(e =>
-                    e.SetEntityName("account.events"));
-
-                cfg.Publish<IntegrationEventEnvelope<MoneyDebitedIntegrationEvent>>(e =>
-                    e.ExchangeType = ExchangeType.Topic);
-
-               cfg.Message<IntegrationEventEnvelope<AccountOpenedIntegrationEvent>>(e =>
-                   e.SetEntityName("account.events"));
-
-                cfg.Publish<IntegrationEventEnvelope<AccountOpenedIntegrationEvent>>(e =>
-                    e.ExchangeType = ExchangeType.Topic);
-
-                cfg.Message<IntegrationEventEnvelope<ClientBlockedIntegrationEvent>>(e =>
-                    e.SetEntityName("account.events"));
-
-                cfg.Publish<IntegrationEventEnvelope<ClientBlockedIntegrationEvent>>(e =>
-                    e.ExchangeType = ExchangeType.Topic);
-
-                cfg.ReceiveEndpoint("account.antifraud", c =>
-                {
-                    c.ConfigureConsumeTopology = false;
-
-                    //c.Bind("account.antifraud", s =>
-                    //{
-                    //    s.ExchangeType = ExchangeType.Topic;
-                    //});
-
-                    c.ConfigureConsumer<ClientBlockedIntegrationEventConsumer>(context);
-
-                    c.ConfigureConsumer<ClientUnblockedIntegrationEventConsumer>(context);
-                });
-
-                cfg.ConfigureEndpoints(context);
             });
         });
 

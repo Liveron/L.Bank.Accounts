@@ -1,5 +1,5 @@
 ﻿using JetBrains.Annotations;
-using L.Bank.Accounts.Infrastructure;
+using L.Bank.Accounts.Infrastructure.Integration;
 
 namespace L.Bank.Accounts.Features.Accounts.IntegrationEvents;
 
@@ -9,7 +9,7 @@ public sealed record MoneyDebitedIntegrationEvent(
     string Currency,
     Guid OperationId,
     string? Reason)
-    : IntegrationEvent("account.money.debited")
+    : IntegrationEvent
 {
     /// <summary>
     /// Id счета, с которого списаны деньги.

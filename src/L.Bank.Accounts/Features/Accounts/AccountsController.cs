@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Common.Filters;
-using L.Bank.Accounts.Features.Accounts.BlockClient;
 using L.Bank.Accounts.Features.Accounts.ChangeInterestRate;
 using L.Bank.Accounts.Features.Accounts.CheckAccountExists;
 using L.Bank.Accounts.Features.Accounts.CloseAccount;
@@ -16,8 +15,6 @@ using MediatR;
 using L.Bank.Accounts.Features.Accounts.CreateTransaction;
 using L.Bank.Accounts.Features.Accounts.GetAccountProperty;
 using L.Bank.Accounts.Features.Accounts.UpdateAccount;
-using L.Bank.Accounts.Infrastructure.MassTransit;
-using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 
 namespace L.Bank.Accounts.Features.Accounts;
@@ -31,7 +28,7 @@ namespace L.Bank.Accounts.Features.Accounts;
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-public sealed class AccountsController(IMediator mediator, IPublishEndpoint endpoint) : ControllerBase
+public sealed class AccountsController(IMediator mediator) : ControllerBase
 {
     /// <summary>
     /// Создать счет
@@ -203,12 +200,12 @@ public sealed class AccountsController(IMediator mediator, IPublishEndpoint endp
         return await mediator.Send(query);
     }
 
-    [HttpPost("close")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<MbResult> CloseClient([FromBody] Guid clientId)
-    {
-        var integrationEvent = new ClientBlockedIntegrationEvent(clientId);
-        await endpoint.PublishIntegrationEvent(integrationEvent);
-        return MbResult.Success();
-    }
+    //[HttpPost("close")]
+    //[ProducesResponseType(StatusCodes.Status200OK)]
+    //public async Task<MbResult> CloseClient([FromBody] Guid clientId)
+    //{
+    //    var integrationEvent = new ClientBlockedIntegrationEvent(clientId);
+    //    await endpoint.PublishIntegrationEvent(integrationEvent);
+    //    return MbResult.Success();
+    //}
 }

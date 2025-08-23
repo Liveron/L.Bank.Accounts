@@ -1,15 +1,17 @@
-﻿using L.Bank.Accounts.Common;
+﻿using L.Bank.Accounts.Application;
+using L.Bank.Accounts.Common;
 using L.Bank.Accounts.Features.Accounts.Errors;
 using L.Bank.Accounts.Features.Accounts.IntegrationEvents;
-using L.Bank.Accounts.Infrastructure.Database.Outbox;
 using L.Bank.Accounts.Infrastructure.Identity;
 using L.Bank.Accounts.Infrastructure.Identity.Errors;
+using L.Bank.Accounts.Infrastructure.Integration;
+using Npgsql.PostgresTypes;
 
 namespace L.Bank.Accounts.Features.Accounts.OpenAccount;
 
 public sealed class OpenAccountCommandHandler(
     ICurrencyService currencyService, IAccountsRepository accountsRepository, 
-    IIdentityService identityService, IOutboxService outbox) 
+    IIdentityService identityService, IIntegrationService<IntegrationEvent> integrationService) 
     : RequestHandler<OpenAccountCommand, MbResult<Guid>>
 {
     public override async Task<MbResult<Guid>> Handle(OpenAccountCommand request, CancellationToken cancellationToken)
@@ -32,7 +34,7 @@ public sealed class OpenAccountCommandHandler(
 
         var integrationEvent = new AccountOpenedIntegrationEvent(
             createdAccount.Id, createdAccount.OwnerId, createdAccount.Currency, createdAccount.Type);
-        await outbox.SaveEventAsync(integrationEvent);
+        await integrationService.AddAndSaveAsync(integrationEvent);
 
         return ResultFactory.Success(createdAccount.Id);
     }

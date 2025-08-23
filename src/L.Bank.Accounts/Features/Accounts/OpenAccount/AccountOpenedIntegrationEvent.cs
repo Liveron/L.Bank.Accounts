@@ -1,10 +1,10 @@
 ﻿using JetBrains.Annotations;
-using L.Bank.Accounts.Infrastructure;
+using L.Bank.Accounts.Infrastructure.Integration;
 
-namespace L.Bank.Accounts.Features.Accounts.IntegrationEvents;
+namespace L.Bank.Accounts.Features.Accounts.OpenAccount;
 
 public sealed record AccountOpenedIntegrationEvent(Guid AccountId, Guid OwnerId, string Currency, AccountType Type)
-    : IntegrationEvent("account.opened")
+    : IntegrationEvent
 {
     public Guid AccountId { get; private init; } = AccountId;
     public Guid OwnerId { get; private init; } = OwnerId;
